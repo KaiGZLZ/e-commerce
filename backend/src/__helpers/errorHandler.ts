@@ -1,26 +1,32 @@
-import { Request, Response, NextFunction} from 'express'
+import { type Request, type Response, type NextFunction } from 'express'
 
-// Error management 
-function errorHandler(err: any, _req: Request, res: Response, _next: NextFunction) {
-
+// Error management
+export default async function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): Promise<Response> {
     if (typeof (err) === 'string') {
         // Custom application error
-        return res.status(400).json({ message: err });
+        return res.status(400).send(err)
     }
 
     if (err.name === 'ValidationError') {
         // mongoose validation error
-        return res.status(400).json({ message: err.message });
+        console.log('ValidationError')
+        return res.status(400).send(err.message)
     }
 
     if (err.name === 'UnauthorizedError') {
         // jwt error de autentication
         // Invalid Token
-        return res.status(401).json({ message: 'The token authorization is wrong or expired. Please login again' });
+        return res.status(401).send(err.message)
     }
- 
-    // default 500 server error
-    return res.status(500).json({ message: err.message });
-}
 
-module.exports = errorHandler;
+    if (err.name === 'CastError') {
+        return res.status(422).send(err.message)
+    }
+
+    if (err.name === 'NotFoundError') {
+        return res.status(404).send(err.message)
+    }
+
+    // default 500 server error
+    return res.status(500).send(err.message)
+}

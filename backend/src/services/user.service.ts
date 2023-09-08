@@ -1,242 +1,215 @@
-
-import bcrypt from 'bcryptjs' 
-import jsonwebtoken from 'jsonwebtoken' 
+import bcrypt from 'bcryptjs'
+import jsonwebtoken from 'jsonwebtoken'
 
 import config from '../config'
 import User from '../Models/user.model'
 
-import sendMail from '../__helpers/sendEmail';
-import { activateAccountMail } from '../mails/user.mail';
+import sendMail from '../__helpers/sendEmail'
+import { activateAccountMail } from '../mailTemplates/user.mails'
+import { type sendRecoveryEmailType, type userAuthenticateType, type userChangePasswordType, type userDeleteType, type userLoginType, type userRegisterType } from './_servicesTypes/userService.types'
 
-/**
- * Funtion to register an user
- * 
- * @param {object} data
+/** Funtion to register an user
+ *
+ * @param {object} data._user - Users firstname
  * @param {string} data.firstname - Users firstname
  * @param {string} data.lastname - Users lastname
  * @param {string} data.username - Users username
  * @param {string} data.password - Users password
  * @param {string} data.email - Users email
- * 
+ *
  */
-export async function userRegister(data: any) {
-
-    const user = data.user;
-
+export async function userRegister(data: userRegisterType): Promise<object> {
     // Look if there is a user with the same name
-    let existingUser = await User.findOne({ username: user.username });
+    let existingUser = await User.findOne({ username: data.username })
 
-    if (existingUser) throw ('Already exists this username');
+    if (existingUser !== null) throw new Error('Already exists this username')
 
     // Look if there is an user with the same email
-    existingUser = await User.findOne({ email: user.email });
+    existingUser = await User.findOne({ email: data.email })
 
-    if (existingUser) throw ('The email was already used by ' + existingUser.username);
+    if (existingUser !== null) throw new Error('The email was already used by ' + existingUser.username)
 
     // If not, Register the new user
 
+    const encryptedPassword = bcrypt.hashSync(data.password, bcrypt.genSaltSync(10))
+    data.password = encryptedPassword
 
-    let encryptedPassword = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10));
-    user.password = encryptedPassword;
+    const activationToken = bcrypt.hashSync(new Date().toString() + data.password + config.SECRET, bcrypt.genSaltSync(10))
+    data.activationToken = activationToken
 
-    let activationToken = bcrypt.hashSync(new Date().toString() + user.password + config.SECRET, bcrypt.genSaltSync(10));
-    user.activationToken = activationToken;
+    const newUser = new User(data)
+    const newUserSaved = await newUser.save()
 
-    const newUser = new User(user)
-    await newUser.save()
+    // The confirmation email will be sent
 
-    // The confirmation email will be sent 
-
-    let subject = "ToDoList Confirmation Email";
-    let text = "To confirm the email";
-    let html = activateAccountMail(process.env.URL_CONFIRMATION_EMAIL, activationToken);
+    const subject = 'ToDoList Confirmation Email'
+    const text = 'To confirm the email'
+    const html = activateAccountMail(process.env.URL_CONFIRMATION_EMAIL, activationToken)
 
     try {
-        await sendMail(user.email, subject, text, html);
-    }
-    catch (e) {
-        throw (e)
+        await sendMail(data.email, subject, text, html)
+    } catch (e) {
+        await User.findByIdAndDelete(newUserSaved._id)
+        throw new Error('There was a problem sending the email. Please try again later')
     }
 
     return {
-        description: "User added successfully",
+        message: 'User added successfully'
     }
 }
 
-
 /** Funtion to Delete an user
- * 
+ *
  * @param {object} data
- * @param {string} data.user - username
- * @param {string} data.user - password
- * 
+ * @param {object} data._user - username
+ * @param {string} data.password - password
+ *
  */
-export async function userDelete(data: any) {
+export async function userDelete(data: userDeleteType): Promise<object> {
+    const passwordUsernameToDelete = data.password
 
-    const passwordUsernameToDelete = data.password;
-
-    let result = bcrypt.compareSync(passwordUsernameToDelete, data._user.password);
+    const result = bcrypt.compareSync(passwordUsernameToDelete, data._user.password)
 
     if (result) {
-
         await User.findOneAndDelete({ username: data._user.username })
 
         return {
             result: true,
-            description: 'User deleted successfully',
+            message: 'User deleted successfully'
         }
-    }
-    else {
+    } else {
         return {
             result: false,
-            description: 'Password is incorrect',
+            message: 'Password is incorrect'
         }
     }
 }
 
-/**
- * Funtion to login an user
- * 
- * @param {object} data - 
- * @param {string} data.user - Users username
- * @param {string} data.user - Users password
- * 
+/** Funtion to login an user
+ *
+ * @param {object} data -
+ * @param {string} data.username - Users username
+ * @param {string} data.password - Users password
+ *
  */
-export async function userLogin(data: any) {
+export async function userLogin(data: userLoginType): Promise<object> {
+    console.log({ ...data })
+    // Look if there is an user with the same username
+    const user = await User.findOne({ username: data.username })
 
-    const userRequested = data.userRequested;
+    if (!user) throw new Error('There is a problem with the username or the password')
 
-    const user = await User.findOne({ username: userRequested.username })
+    if (!user.accountStatus) throw new Error('You must activate your account')
 
-    if (!user) throw ('There is a problem with the username or the password');
-
-    if (!user.accountStatus) throw ('You must activate your account');
-
-
-    let result = bcrypt.compareSync(userRequested.password, user.password);
+    const result = bcrypt.compareSync(data.password, user.password)
 
     if (result) {
-        const token = jsonwebtoken.sign({ sub: user.id }, config.SECRET, { expiresIn: 60 * 60 }); // Expiration time: 1h
+        const token = jsonwebtoken.sign({ sub: user.id }, config.SECRET, { expiresIn: 60 * 60 }) // Expiration time: 1h
 
         return {
             user: {
-                ...user.toJSON(),
-                token,
+                ...user.toJSON()
             },
-        };
-    }
-    else throw ('There is a problem with the username or the password');
+            token
+        }
+    } else throw new Error('There is a problem with the username or the password')
 }
 
-
 /** Funtion to authenticate the email from an user
- * 
- * @param {object} data - 
+ *
+ * @param {object} data -
  * @param {string} data.user - Users username
- * @param {string} data.user - Users password
- * 
+ * @param {string} data.password - Users password
+ *
  */
-export async function userAuthenticate(data: any) {
+export async function userAuthenticate(data: userAuthenticateType): Promise<object> {
+    const activationToken = data.token
 
-    const activationToken = data.token;
-
-    const user = await User.findOne({ activationToken: activationToken })
+    const user = await User.findOne({ activationToken })
 
     if (!user) {
-        throw ('Invalid activation token')
-    }
-    else {
-        if (user.accountStatus === true) {
-            throw ('Your account was already activated. Please Loggin normally')
+        throw new Error('Invalid activation token')
+    } else {
+        if (user.accountStatus) {
+            throw new Error('Your account was already activated. Please Loggin normally')
         }
     }
 
-    user.accountStatus = true;
-    user.activationToken = "";
+    user.accountStatus = true
+    user.activationToken = ''
 
-    const userSaved = await user.save();
+    const userSaved = await user.save()
 
-    const token = jsonwebtoken.sign({ sub: userSaved.id }, config.SECRET, { expiresIn: 60 * 60 }); // Expiration time: 1h
+    const token = jsonwebtoken.sign({ sub: userSaved.id }, config.SECRET, { expiresIn: 60 * 60 }) // Expiration time: 1h
 
     return {
         user: {
-            ...user.toJSON(),
-            token,
+            ...user.toJSON()
         },
-    };
+        token
+    }
 }
 
-
 /** Funtion to send an recovery email if the password was forgotten
- * 
- * @param {object} data - 
+ *
+ * @param {object} data -
  * @param {string} data.email - User email
- * 
+ *
  */
-export async function sendRecoveryEmail(data: any) {
+export async function sendRecoveryEmail(data: sendRecoveryEmailType): Promise<void> {
+    const email = data.email
 
-    const email = data.data.email;
+    const user = await User.findOne({ email })
 
-    const user = await User.findOne({ email: email })
+    if (!user) throw new Error('No user is registered with this email')
 
-    if (!user) throw ('No user is registered with this email');
+    const recoverPasswordToken = bcrypt.hashSync(new Date().toString() + user.password + config.SECRET, bcrypt.genSaltSync(10))
 
-
-    let recoverPasswordToken = bcrypt.hashSync(new Date().toString() + user.password + config.SECRET, bcrypt.genSaltSync(10));
-
-    user.recoverPasswordToken = recoverPasswordToken;
+    user.recoverPasswordToken = recoverPasswordToken
 
     await user.save()
 
-
     // The email will be sent with the link to recover the password
 
-    let subject = "ToDoList Recover Password";
-    let text = "To confirm the email";
-    let html = activateAccountMail(process.env.URL_RECOVER_PASSWORD, recoverPasswordToken);
+    const subject = 'ToDoList Recover Password'
+    const text = 'To confirm the email'
+    const html = activateAccountMail(process.env.URL_RECOVER_PASSWORD, recoverPasswordToken)
 
-    try {
-        await sendMail(user.email, subject, text, html);
-    }
-    catch (e) {
-        throw (e)
-    }
+    await sendMail(user.email, subject, text, html)
 }
 
 /**
  * Funtion to change the user password
- * 
- * @param {object} data - 
+ *
+ * @param {object} data -
  * @param {string} data.token - Users username
  * @param {string} data.password - Users password
- * 
+ *
  */
-export async function userChangePassword(data: any) {
+export async function userChangePassword(data: userChangePasswordType): Promise<object> {
+    const recoverPasswordToken = data.token
+    const password = data.password
 
-    const recoverPasswordToken = data.data.token;
-    const password = data.data.password;
-
-    const user = await User.findOne({ recoverPasswordToken: recoverPasswordToken })
+    const user = await User.findOne({ recoverPasswordToken })
 
     if (!user) {
-        throw ('Invalid activation token')
+        throw new Error('Invalid activation token')
     }
 
-    let result = bcrypt.compareSync(password, user.password);
+    const result = bcrypt.compareSync(password, user.password)
 
     if (result) {
-        throw ('The password cannot be the same as the one passed');
+        throw new Error('The password cannot be the same as the one passed')
     }
 
-    let encryptedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-    user.password = encryptedPassword;
+    const encryptedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10))
+    user.password = encryptedPassword
 
-    user.recoverPasswordToken = "";
+    user.recoverPasswordToken = ''
 
-    await user.save();
+    await user.save()
 
     return {
-        message: "The password was changed successfully"
-    };
+        message: 'The password was changed successfully'
+    }
 }
-

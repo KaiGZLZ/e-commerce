@@ -1,46 +1,50 @@
 import mongoose from 'mongoose'
+import userEnum from '../__helpers/enums/user.enum'
 
-const { Schema } = mongoose;
+const { Schema } = mongoose
 
-const taskSchema = new Schema ({
+interface userSchemaType {
+    username: string
+    firstname: string
+    lastname: string
+    email: string
+    password: string
+    role: number
 
-    id: String, 
-    title: { type: String, required: true }, 
-    description: String,
-    responsible: String,
-    priority: { type: Number, required: true } 
-})
+    accountStatus: boolean
+    activationToken: string
 
+    recoverPasswordToken: string
 
-const userSchema = new Schema (
+    tries: number
+}
+
+const userSchema = new Schema<userSchemaType>(
     {
         username: { type: String, required: true, unique: true },
         firstname: { type: String, required: true },
         lastname: { type: String, required: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
-        
-        accountStatus: { type: Boolean, default: false },   // If the account is activated or not
-        activationToken: { type: String, default: "" },
-        
-        recoverPasswordToken: { type: String, default: "" },
+        role: { type: Number, default: userEnum.roles.user },
 
-        tries: { type: Number, default: 0 },
+        accountStatus: { type: Boolean, default: false }, // If the account is activated or not
+        activationToken: { type: String, default: '' },
 
-        tasks: [taskSchema]
+        recoverPasswordToken: { type: String, default: '' },
 
+        tries: { type: Number, default: 0 }
     }, {
         // The id and password are deleted at the time of sending the data to the client
-        toJSON: { 
+        toJSON: {
             virtuals: true,
-            transform: function (_doc: any, ret: any) {
-                delete ret._id;
-                delete ret.id;
-                delete ret.password;
+            transform: function(_doc: any, ret: any) {
+                delete ret._id
+                delete ret.id
+                delete ret.password
             }
         }
     }
 )
 
-export = mongoose.model('User', userSchema);
-
+export = mongoose.model<userSchemaType>('User', userSchema)

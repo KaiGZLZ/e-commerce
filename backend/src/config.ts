@@ -7,4 +7,4 @@ export = {
     EMAIL_HOST: process.env.EMAIL_HOST,
     EMAIL_PASSWORD_HOST: process.env.EMAIL_PASSWORD_HOST
 
-  }
+}
