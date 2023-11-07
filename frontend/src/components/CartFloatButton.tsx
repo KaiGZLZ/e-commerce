@@ -17,10 +17,9 @@ function CartFloatButton() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const cart = localStorage.getItem('cart')
-
-    if (cart) {
-      const newCart = JSON.parse(cart)
+    const cartStoraged = localStorage.getItem('cart')
+    if (cartStoraged) {
+      const newCart = JSON.parse(cartStoraged)
       dispatch(setCart(newCart))
     }
   }, [])

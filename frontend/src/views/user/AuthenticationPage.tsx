@@ -3,11 +3,11 @@ import React, { useEffect } from 'react'
 import { Box, Flex, Spinner } from '@chakra-ui/react'
 //import { useDispatch } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useLazyAuthenticateUserQuery } from '../services/user.service'
-import { passphrase } from '../config/config'
+import { useLazyAuthenticateUserQuery } from '../../services/user.service'
 import { useDispatch } from 'react-redux'
-import { alertSlice } from '../redux/slices/alertSlice'
-import CryptoJS from 'crypto-js'
+import { alertSlice } from '../../redux/slices/alertSlice'
+import { isUser } from '../../__helpers/isUser'
+import { userSlice } from '../../redux/slices/userSlice'
 
 
 function Authentication() {
@@ -30,11 +30,26 @@ function Authentication() {
     authenticateUser(data)
       .then((response) => {
         if(response.isSuccess){
-          const cryptUser = CryptoJS.AES.encrypt(JSON.stringify(response.data.user), passphrase).toString()
-          localStorage.setItem('user', cryptUser)
-          console.log(localStorage.getItem('user'))
+
+          const user = isUser(response.data.user)
+
+          if(!user){
+            dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: 'Error getting user data' }))
+            navigate('/')
+            return
+          }
+          localStorage.setItem('user', JSON.stringify(user))
+
+          if(!response.data.token){
+            dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: 'Error getting token' }))
+            navigate('/')
+            return
+          }
+          localStorage.setItem('token', response.data.token)
+
+          dispatch(userSlice.actions.setUser(user))
           dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: 'User logged successfully' }))
-          navigate('/dashboard')
+          navigate('/')
         }
         else{
           if (response.error){
@@ -43,6 +58,7 @@ function Authentication() {
               dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: errData }))
             }
           }
+          navigate('/login')
         }
       })
       .catch((error) =>

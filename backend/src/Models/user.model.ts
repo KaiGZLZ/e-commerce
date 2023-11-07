@@ -42,6 +42,8 @@ const userSchema = new Schema<userSchemaType>(
                 delete ret._id
                 delete ret.id
                 delete ret.password
+                delete ret.activationToken
+                delete ret.recoverPasswordToken
             }
         }
     }

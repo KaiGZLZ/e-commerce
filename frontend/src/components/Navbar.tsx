@@ -2,13 +2,17 @@ import React from 'react'
 import { Box, Flex, Spacer, IconButton, useDisclosure, Collapse, Input, InputGroup, InputLeftElement, Center, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody, Button } from '@chakra-ui/react'
 import { HamburgerIcon, CloseIcon, SearchIcon, SettingsIcon, WarningTwoIcon } from '@chakra-ui/icons'
 import { Link, useLocation } from 'react-router-dom'
+import { parseLocarstorageUser } from '../__helpers/isUser'
+import { userSlice } from '../redux/slices/userSlice'
+import { useDispatch } from 'react-redux'
 
 function Navbar() {
   const location = useLocation()
+  const dispatch = useDispatch()
   const { isOpen: categoriesAreOpen, onToggle: openCategories } = useDisclosure()
   const { isOpen: categoriesAreOpen2, onToggle: openCategories2 } = useDisclosure()
 
-  const currentUser = localStorage.getItem('user')
+  const user = parseLocarstorageUser()
 
   return (<Flex flexDirection={'column'} width={'100%'} maxWidth={'1200px'}>
 
@@ -49,7 +53,7 @@ function Navbar() {
             </Flex>
           </Link>
         </Flex>
-        {!currentUser ?
+        {!user ?
           <Flex>
             { /* Login Button */}
             <Link to={'/login'}>
@@ -71,7 +75,7 @@ function Navbar() {
               <PopoverTrigger>
                 <Flex>
                   <Button display={['none', 'none', 'flex', 'flex']} bg={'gray.600'} mr={6} color="white" fontWeight={'bold'} px={10} py={2} cursor={'pointer'} _hover={{ bg: 'gray.500' }}>
-                    Profile
+                    {user.username}
                   </Button>
                   <IconButton
                     aria-label='Open Menu'
@@ -118,6 +122,8 @@ function Navbar() {
                     <Button fontWeight={'bold'} width={'100%'} height={'auto'} alignItems={'center'} justifyContent={'center'} bg={'red.200'} color="white" paddingY={'1rem'} _hover={{ bg: 'blue.500' }}
                       onClick={() => {
                         localStorage.removeItem('user')
+                        localStorage.removeItem('token')
+                        dispatch(userSlice.actions.deleteUser())
                       }}
                     >
                       Loggout <WarningTwoIcon mx={2} />

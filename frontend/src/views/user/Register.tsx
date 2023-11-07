@@ -5,9 +5,9 @@ import { ArrowRightIcon } from '@chakra-ui/icons'
 //import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm  } from 'react-hook-form'
-import { useLazyRegisterUserQuery } from '../services/user.service'
+import { useLazyRegisterUserQuery } from '../../services/user.service'
 import { useDispatch } from 'react-redux'
-import { alertSlice } from '../redux/slices/alertSlice'
+import { alertSlice } from '../../redux/slices/alertSlice'
 
 type RegisterData = {
   username: string

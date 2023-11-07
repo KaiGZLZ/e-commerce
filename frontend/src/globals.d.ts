@@ -7,3 +7,11 @@ declare interface Product {
     rating: number;
   }
 
+declare interface user {
+  username: string
+  firstname: string
+  lastname: string
+  email: string
+  role: number
+}
+

@@ -5,7 +5,7 @@ import { ArrowRightIcon } from '@chakra-ui/icons'
 //import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm  } from 'react-hook-form'
-import { useLazyForgottenPasswordUserQuery } from '../services/user.service'
+import { useLazyForgottenPasswordUserQuery } from '../../services/user.service'
 
 type Data = {
   email: string

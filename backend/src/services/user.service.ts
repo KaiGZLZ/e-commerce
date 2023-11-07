@@ -93,7 +93,6 @@ export async function userDelete(data: userDeleteType): Promise<object> {
  *
  */
 export async function userLogin(data: userLoginType): Promise<object> {
-    console.log({ ...data })
     // Look if there is an user with the same username
     const user = await User.findOne({ username: data.username })
 

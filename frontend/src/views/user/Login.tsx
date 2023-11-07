@@ -5,11 +5,11 @@ import { ArrowRightIcon } from '@chakra-ui/icons'
 //import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm  } from 'react-hook-form'
-import { useLazyLoginUserQuery } from '../services/user.service'
-import { passphrase } from '../config/config'
+import { useLazyLoginUserQuery } from '../../services/user.service'
 import { useDispatch } from 'react-redux'
-import { alertSlice } from '../redux/slices/alertSlice'
-import CryptoJS from 'crypto-js'
+import { alertSlice } from '../../redux/slices/alertSlice'
+import { userSlice } from '../../redux/slices/userSlice'
+import { isUser } from '../../__helpers/isUser'
 
 type LoginData = {
   username: string
@@ -29,14 +29,28 @@ function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginData>()
 
   const onSubmit= (data: LoginData)  => {
-    console.log(data)
-
 
     loginUser(data)
       .then((response) => {
         if(response.isSuccess){
-          const cryptUser = CryptoJS.AES.encrypt(JSON.stringify(response.data.user), passphrase).toString()
-          localStorage.setItem('user', cryptUser)
+
+          const user = isUser(response.data.user)
+
+          // If the response doesn't have the necesary data, show an error
+          if(!user){
+            dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: 'Error getting user data' }))
+            return
+          }
+          localStorage.setItem('user', JSON.stringify(user))
+
+          // If the response doesn't have the token, show an error
+          if(!response.data.token){
+            dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: 'Error getting token' }))
+            return
+          }
+          localStorage.setItem('token', response.data.token)
+
+          dispatch(userSlice.actions.setUser(user))
           dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: 'User logged successfully' }))
           navigate('/')
         }

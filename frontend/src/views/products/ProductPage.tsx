@@ -1,11 +1,11 @@
 import React from 'react'
 import { Image, Text, Flex, Tabs, TabList, Tab, TabPanels, TabPanel } from '@chakra-ui/react'
-import Navbar from '../components/Navbar'
+import Navbar from '../../components/Navbar'
 import { AtSignIcon, ChevronRightIcon } from '@chakra-ui/icons'
 import { useDispatch } from 'react-redux'
-import { addCartItem } from '../redux/slices/cartSlice'
+import { addCartItem } from '../../redux/slices/cartSlice'
 import { Link, useLocation } from 'react-router-dom'
-import CartFloatButton from '../components/CartFloatButton'
+import CartFloatButton from '../../components/CartFloatButton'
 
 const products: Product[] = [
   {
