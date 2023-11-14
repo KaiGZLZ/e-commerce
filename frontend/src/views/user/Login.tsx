@@ -3,13 +3,13 @@ import React from 'react'
 import { Box, Flex, Input, InputGroup, InputLeftElement,Button, Spinner } from '@chakra-ui/react'
 import { ArrowRightIcon } from '@chakra-ui/icons'
 //import { useDispatch } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useForm  } from 'react-hook-form'
 import { useLazyLoginUserQuery } from '../../services/user.service'
 import { useDispatch } from 'react-redux'
 import { alertSlice } from '../../redux/slices/alertSlice'
 import { userSlice } from '../../redux/slices/userSlice'
-import { isUser } from '../../__helpers/isUser'
+import { isUser, parseLocarstorageUser } from '../../__helpers/isUser'
 
 type LoginData = {
   username: string
@@ -18,6 +18,12 @@ type LoginData = {
 
 
 function Login() {
+
+  const user = parseLocarstorageUser()
+
+  if (user) {
+    return <Navigate to={'/'} />
+  }
 
   const navigate = useNavigate() //  Hook para cambiar el path del navegador
   const dispatch = useDispatch()

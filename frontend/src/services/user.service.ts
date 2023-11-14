@@ -33,13 +33,19 @@ export const userService = api.injectEndpoints({
       }),
     }),
     deleteUser: builder.query({
-      query(data) {
-        return {
-          url: 'user/delete',
-          method: 'DELETE',
-          body: JSON.stringify({ ...data }),
-        }
-      },
+      query: (data) => ({
+        url: 'user/delete',
+        method: 'DELETE',
+        body: JSON.stringify(data),
+        // This is the same as passing 'text'
+        responseHandler: (response) => {
+          if (!response.ok) {
+            // Probably return some error object here
+            return response.text()
+          }
+          return response.json()
+        },
+      }),
     }),
     loginUser: builder.query({
       query: (data) => ({
@@ -57,22 +63,34 @@ export const userService = api.injectEndpoints({
       }),
     }),
     ForgottenPasswordUser: builder.query({
-      query(data) {
-        return {
-          url: 'user/forgotten-password',
-          method: 'POST',
-          body: JSON.stringify({ ...data }),
-        }
-      },
+      query: (data) => ({
+        url: 'user/forgotten-password',
+        method: 'POST',
+        body: JSON.stringify(data),
+        // This is the same as passing 'text'
+        responseHandler: (response) => {
+          if (!response.ok) {
+            // Probably return some error object here
+            return response.text()
+          }
+          return response.json()
+        },
+      }),
     }),
     ChangePasswordUser: builder.query({
-      query(data) {
-        return {
-          url: 'user/change-password',
-          method: 'POST',
-          body: JSON.stringify({ ...data }),
-        }
-      },
+      query: (data) => ({
+        url: 'user/change-password',
+        method: 'POST',
+        body: JSON.stringify(data),
+        // This is the same as passing 'text'
+        responseHandler: (response) => {
+          if (!response.ok) {
+            // Probably return some error object here
+            return response.text()
+          }
+          return response.json()
+        },
+      }),
     }),
   }),
 })

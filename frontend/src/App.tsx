@@ -22,6 +22,9 @@ import AuthenticationPage from './views/user/AuthenticationPage'
 import { userSlice } from './redux/slices/userSlice'
 import { useDispatch } from 'react-redux'
 import { parseLocarstorageUser } from './__helpers/isUser'
+import ProductRegisterPage from './views/products/ProductRegisterPage'
+import userEnum from './enums/user.enum'
+import RegisterCategorie from './views/categories/RegisterCategorie'
 
 function App() {
 
@@ -46,6 +49,8 @@ function App() {
             <Route path="/" element={<HomePage />} />
 
             <Route path="/categories/:categorie" element={<Categorie />} />
+            <Route element={<PrivateRoute allowedRoles={[userEnum.role.admin]} />} ><Route path="/categories/register" element={<RegisterCategorie />} /></Route>
+
 
             <Route path='/register' element={<Register />} />
             <Route path="/authenticate" element={<AuthenticationPage />} />
@@ -53,16 +58,11 @@ function App() {
             <Route path='/forgotten-password' element={<ForgottenPassword />} />
             {/* <Route path='/change-password' element={<ForgottenPassword />} /> */}
 
-            <Route path="/products/:productId" element={<ProductPage />} />
 
+            {/* Products section */}
+            <Route path="/products/product/:productId" element={<ProductPage />} />
+            <Route element={<PrivateRoute allowedRoles={[userEnum.role.admin]} />} ><Route path="/products/register" element={<ProductRegisterPage />} /></Route>
 
-
-            {/* Routes that require authentication token */}
-            <Route element={<PrivateRoute />}>
-              {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-
-              {/* <Route path="/products/register" element={<ProductPage />} /> */}
-            </Route>
           </Switch>
         </Router>
       </div>

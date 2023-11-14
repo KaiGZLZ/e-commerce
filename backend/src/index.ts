@@ -18,6 +18,7 @@ server.use(authMiddleware)
 
 server.use('/user', require('./controllers/user.controller'))
 server.use('/products', require('./controllers/product.controller'))
+server.use('/category', require('./controllers/category.controller'))
 
 // Global Error Handler
 server.use(errorHandler)

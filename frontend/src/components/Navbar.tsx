@@ -1,10 +1,11 @@
 import React from 'react'
-import { Box, Flex, Spacer, IconButton, useDisclosure, Collapse, Input, InputGroup, InputLeftElement, Center, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody, Button } from '@chakra-ui/react'
-import { HamburgerIcon, CloseIcon, SearchIcon, SettingsIcon, WarningTwoIcon } from '@chakra-ui/icons'
+import { Box, Flex, Spacer, IconButton, useDisclosure, Collapse, Input, InputGroup, InputLeftElement, Center, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody, Button, Spinner } from '@chakra-ui/react'
+import { HamburgerIcon, CloseIcon, SearchIcon, SettingsIcon, WarningTwoIcon, AtSignIcon } from '@chakra-ui/icons'
 import { Link, useLocation } from 'react-router-dom'
 import { parseLocarstorageUser } from '../__helpers/isUser'
 import { userSlice } from '../redux/slices/userSlice'
 import { useDispatch } from 'react-redux'
+import { useGetAllCategoriesQuery } from '../services/category.service'
 
 function Navbar() {
   const location = useLocation()
@@ -13,6 +14,10 @@ function Navbar() {
   const { isOpen: categoriesAreOpen2, onToggle: openCategories2 } = useDisclosure()
 
   const user = parseLocarstorageUser()
+
+  // The categories are searched
+
+  const { data: categories, isFetching: isFetchingCategories } = useGetAllCategoriesQuery()
 
   return (<Flex flexDirection={'column'} width={'100%'} maxWidth={'1200px'}>
 
@@ -80,7 +85,7 @@ function Navbar() {
                   <IconButton
                     aria-label='Open Menu'
                     colorScheme="white"
-                    icon={<SettingsIcon color='gray.300' />}
+                    icon={<AtSignIcon color='gray.300' />}
                     display={['flex', 'flex', 'none', 'none']}
                   />
                 </Flex>
@@ -98,23 +103,23 @@ function Navbar() {
                   shadow='md'
                   flexDir={'column'}
                 >
-                  <Link to={'/categories/categorie_1'}>
-                    <Flex color="white" paddingY={'1rem'} _hover={{ bg: 'teal.400' }}>
-                    Contact1
+                  <Link to={'/products/register'}>
+                    <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
+                     Register a product
                     </Flex>
                   </Link>
-                  <Link to={'/categories/categorie_1'}>
-                    <Flex color="white" paddingY={'1rem'} _hover={{ bg: 'teal.400' }}>
-                    Contact2
+                  <Link to={'/categories/register'}>
+                    <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
+                    Register a categorie
                     </Flex>
                   </Link>
                   <Link to={'/categories/categorie_2'}>
-                    <Flex color="white" paddingY={'1rem'} _hover={{ bg: 'teal.400' }}>
+                    <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
                     Contact3
                     </Flex>
                   </Link>
                   <Link to={'/categories/categorie_4'}>
-                    <Flex color="white" paddingY={'1rem'} _hover={{ bg: 'teal.400' }}>
+                    <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
                     Contact4
                     </Flex>
                   </Link>
@@ -165,27 +170,17 @@ function Navbar() {
               shadow='md'
               flexDir={'column'}
             >
-
-              <Link to={'/categories/categorie_1'}>
-                <Flex alignItems="center"  color="white" marginY={'1rem'}>
-                  Contact1
-                </Flex>
-              </Link>
-              <Link to={'/categories/categorie_2'}>
-                <Flex alignItems="center"  color="white" marginY={'1rem'}>
-                  Contact2
-                </Flex>
-              </Link>
-              <Link to={'/categories/categorie_3'}>
-                <Flex alignItems="center"  color="white" marginY={'1rem'}>
-                  Contact3
-                </Flex>
-              </Link>
-              <Link to={'/categories/categorie_4'}>
-                <Flex alignItems="center"  color="white" marginY={'1rem'}>
-                  Contact4
-                </Flex>
-              </Link>
+              {
+                isFetchingCategories ?
+                  <Spinner /> :
+                  categories ? categories.map((categorie) => (
+                    <Link to={`/products/list/${categorie.name}`} key={categorie._id}>
+                      <Flex alignItems="center"  color="white" marginY={'1rem'}>
+                        {categorie.name}
+                      </Flex>
+                    </Link>
+                  )) : null
+              }
             </Flex>
           </Collapse>
           <Link to={'/contact'}>
@@ -193,11 +188,13 @@ function Navbar() {
               Contact
             </Flex>
           </Link>
-          <Link to={'/login'}>
-            <Flex alignItems="center"  mr={6} color="white" marginTop={'3rem'} marginBottom={'1rem'}>
+          { !user && <>
+            <Link to={'/login'}>
+              <Flex alignItems="center"  mr={6} color="white" marginTop={'3rem'} marginBottom={'1rem'}>
               Login
-            </Flex>
-          </Link>
+              </Flex>
+            </Link>
+          </>}
         </Center>
       </Collapse>
     </Box >
@@ -224,31 +221,18 @@ function Navbar() {
               shadow='md'
               flexDir={'column'}
             >
-              <Link to={'/categories/categorie_1'}>
-                <Flex color="white" paddingY={'1rem'} _hover={{ bg: 'teal.400' }}>
-                  Contact1
-                </Flex>
-              </Link>
-              <Link to={'/categories/categorie_1'}>
-                <Flex color="white" paddingY={'1rem'} _hover={{ bg: 'teal.400' }}>
-                  Contact2
-                </Flex>
-              </Link>
-              <Link to={'/categories/categorie_2'}>
-                <Flex color="white" paddingY={'1rem'} _hover={{ bg: 'teal.400' }}>
-                  Contact3
-                </Flex>
-              </Link>
-              <Link to={'/categories/categorie_4'}>
-                <Flex color="white" paddingY={'1rem'} _hover={{ bg: 'teal.400' }}>
-                  Contact4
-                </Flex>
-              </Link>
-              <Link to={'/categories/categorie_5'}>
-                <Flex color="white" paddingY={'1rem'} _hover={{ bg: 'teal.400' }}>
-                  Contact5
-                </Flex>
-              </Link>
+              {
+                isFetchingCategories ?
+                  <Spinner /> :
+                  categories ? categories.map((categorie) => (
+                    <Link to={`/products/list/${categorie.name}`} key={categorie._id}>
+                      <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
+                        {categorie.name}
+                      </Flex>
+                    </Link>
+                  )) : null
+
+              }
             </PopoverBody>
           </PopoverContent>
         </Popover>

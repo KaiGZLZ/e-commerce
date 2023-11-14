@@ -16,7 +16,8 @@ export const AlertComponent = () => {
 
   useEffect(() => {
     if (alert.status && alert.message){
-      //setAlertActive(true)
+      // the window scrolls to the top smoothly
+      window.scrollTo({ top: 0, behavior: 'smooth' })
       setTimeout(() => {
         dispatch(alertSlice.actions.clearAlert())
       }, 3000)

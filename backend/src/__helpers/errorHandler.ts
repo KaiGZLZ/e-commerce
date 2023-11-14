@@ -1,7 +1,7 @@
 import { type Request, type Response, type NextFunction } from 'express'
 
 // Error management
-export default async function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): Promise<Response> {
+export default async function errorHandler(err: any, _req: Request, res: Response, _next: NextFunction): Promise<Response> {
     if (typeof (err) === 'string') {
         // Custom application error
         return res.status(400).send(err)
@@ -20,6 +20,7 @@ export default async function errorHandler(err: Error, _req: Request, res: Respo
     }
 
     if (err.name === 'CastError') {
+        console.log('CastError')
         return res.status(422).send(err.message)
     }
 
@@ -27,6 +28,13 @@ export default async function errorHandler(err: Error, _req: Request, res: Respo
         return res.status(404).send(err.message)
     }
 
+    if (err.name === 'MongoServerError') {
+        // If the error is a duplicate key error
+        if (err.code === 11000) {
+            const key = Object.keys(err.keyValue)[0]
+            return res.status(409).send('Duplicate field value entered. The ' + key + ' ' + err.keyValue[key] + ' already exists')
+        }
+    }
     // default 500 server error
     return res.status(500).send(err.message)
 }

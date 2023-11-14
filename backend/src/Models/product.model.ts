@@ -12,7 +12,6 @@ const productSchema: any = new Schema(
         rating: { type: Number, default: 0 },
         numberOfVotes: { type: Number, default: 0 },
         category: { type: String, required: true },
-        subCategory: { type: String, required: true },
         tags: [String],
         lastPrice: { type: Number, default: 0 },
         wholesalePrice: { type: Number, default: 0 },

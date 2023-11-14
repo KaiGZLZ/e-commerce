@@ -1,13 +1,12 @@
 export default {
 
     roles: {
-        admin: 0,
-        user: 1
+        admin: 1,
+        user: 2
     },
 
     rolesDescription: {
-        0: 'admin',
-        1: 'user'
+        1: 'admin',
+        2: 'user'
     }
-
 }

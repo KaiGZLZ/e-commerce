@@ -32,7 +32,7 @@ function ProductCard({ product }: { product: Product })  {
       _hover={{ shadow:'md' }}
       onMouseOver={() => setState(false)}
       onMouseLeave={() => setState(true)}
-      onClick={() => navigate(`/products/${product.id}`, { state: product.id } )}
+      onClick={() => navigate(`/products/product/${product.id}`, { state: product.id } )}
     >
       <Box position={'relative'} overflow={'hidden'}>
         <Image src={product.image} alt={product.name} objectFit="cover" rounded={20} maxHeight="300px" w="100%" />

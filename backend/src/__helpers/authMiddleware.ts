@@ -11,7 +11,8 @@ const exceptions: Array<string | RegExp> = [
     /^\/user\/authenticate/, // authentication route
     /^\/user\/forgotten-password/, // forgoten-password route
     /^\/user\/change-password/, // forgoten-password route
-    /^\/products\/product\// // forgoten-password route
+    /^\/products\/product\//, // forgoten-password route
+    /^\/category\/get-all/
 ]
 
 const authMiddleware = async(req: Request, _res: Response, next: NextFunction): Promise<void> => {

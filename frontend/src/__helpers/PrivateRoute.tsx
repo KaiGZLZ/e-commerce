@@ -1,18 +1,29 @@
 import React from 'react'
-import { Outlet, Navigate } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 import { parseLocarstorageUser } from './isUser'
 
-//Renderizar un componente ruta si el usuario está conectado, de lo contrario, lo redirige a la página /login.
-//Verifica rol de igual forma para restringir el acceso
-export const PrivateRoute = () => {
+interface PrivateRouteProps {
+  allowedRoles: number[];
+}
+
+//Render a route component if the user is logged in, otherwise redirect them to the /login page.
+//Check role in the same way to restrict access
+export const PrivateRoute = ({ allowedRoles }: PrivateRouteProps) => {
 
   const user = parseLocarstorageUser()
 
-  //no logueado redireccionar al login
-  if (user) {
+  if (!user) {
+    return <Navigate to={'/login'} />
+  }
+
+  if (allowedRoles.length === 0) {
     return <Outlet />
   }
-  else {
-    return <Navigate to={'/'}/>
+
+  if (allowedRoles.includes(user.role)) {
+    return <Outlet />
   }
+
+  return <Navigate to={'/'} />
+
 }
