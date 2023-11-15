@@ -12,6 +12,7 @@ const exceptions: Array<string | RegExp> = [
     /^\/user\/forgotten-password/, // forgoten-password route
     /^\/user\/change-password/, // forgoten-password route
     /^\/products\/product\//, // forgoten-password route
+    /^\/products\/table/, // forgoten-password route
     /^\/category\/get-all/
 ]
 

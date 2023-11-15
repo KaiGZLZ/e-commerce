@@ -1,11 +1,12 @@
 
 import React from 'react'
 import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Icon, Flex, Box, Grid, IconButton, useDisclosure, Collapse } from '@chakra-ui/react'
-import { ArrowBackIcon, ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons'
+import { ArrowBackIcon, ChevronDownIcon, ChevronUpIcon, CloseIcon } from '@chakra-ui/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../redux/store/store'
 import { NumericFormat } from 'react-number-format'
 import { cartSlice } from '../redux/slices/cartSlice'
+import { Link } from 'react-router-dom'
 
 export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
 
@@ -14,7 +15,7 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
   const dispatch = useDispatch()
   const btnRef = React.useRef(null)
 
-  const { isOpen: aa, onToggle } = useDisclosure()
+  const { isOpen: openTotals, onToggle } = useDisclosure({ defaultIsOpen: true })
 
   return (
     <>
@@ -26,7 +27,7 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
         size={['full', 'full', 'xl', 'xl']}
       >
         <ModalOverlay />
-        <ModalContent >
+        <ModalContent maxHeight={'95vh'} marginY={'2.5vh'}>
           <ModalCloseButton
             width={'100%'}
             position={'initial'}
@@ -45,17 +46,19 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
             {
               cart.products.map((product, index) => {
                 return <Box key={index} background={'white'} borderRadius={10} marginBottom={'10px'} paddingBottom={'10px'}>
-                  <Grid  gridTemplateColumns={'repeat(3, 1fr)'} justifyContent={'space-between'} alignItems={'center'} textAlign={'center'}>
-                    <Box borderRadius={10} overflow={'hidden'}>
-                      <img src={product.image} alt={product.name}  />
-                    </Box>
-                    <Box wordBreak={'break-word'} maxHeight={'120px'} overflow={'hidden'}>
-                      {product.name}
-                    </Box>
-                    <Box>
-                      <NumericFormat value={product.price} displayType={'text'} decimalScale={2} thousandSeparator='.' decimalSeparator=',' prefix={'$'} />
-                    </Box>
-                  </Grid>
+                  <Link to={`/products/product/${product.id}`}>
+                    <Grid  gridTemplateColumns={'repeat(3, 1fr)'} justifyContent={'space-between'} alignItems={'center'} textAlign={'center'}>
+                      <Box borderRadius={10} overflow={'hidden'}>
+                        <img src={'https://pczatelca.com/images/productos/491/1686882805_Probador%20de%20Bateria%20C%201.png'} alt={product.name}  />
+                      </Box>
+                      <Box wordBreak={'break-word'} maxHeight={'120px'} overflow={'hidden'}>
+                        {product.name}
+                      </Box>
+                      <Box>
+                        <NumericFormat value={product.price} displayType={'text'} decimalScale={2} thousandSeparator='.' decimalSeparator=',' prefix={'$'} />
+                      </Box>
+                    </Grid>
+                  </Link>
                   <Grid gridTemplateColumns={'repeat(2, 1fr)'} textAlign={'center'}>
                     <Flex fontWeight={'bold'} maxHeight={'50px'} alignItems={'center'} justifyContent={'center'}  width={'auto'}>
                       <IconButton
@@ -67,7 +70,7 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
                         Quantity: {product.quantity}
                       <IconButton
                         aria-label={'Add'}
-                        icon={<ArrowBackIcon transform={'rotate(180deg)'} />}
+                        icon={(product.stock === product.quantity) ? <CloseIcon /> : <ArrowBackIcon transform={'rotate(180deg)'} />}
                         onClick={() => dispatch(cartSlice.actions.addCartItem(product))}
                         marginX={'10px'}
                       />
@@ -85,7 +88,7 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
           <ModalFooter display={'block'}>
             <Flex width={'100%'} alignItems={'center'} justifyContent={'end'} height={0}>
               {
-                aa ?
+                openTotals ?
                   <IconButton
                     aria-label={'Collapse'}
                     icon={<>Hide <ChevronUpIcon /></>}
@@ -121,7 +124,7 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
 
 
 
-            <Collapse startingHeight={0} in={aa}>
+            <Collapse startingHeight={0} in={openTotals}>
               <Flex justifyContent={'space-between'} flexDirection={'column'} marginBottom={'25px'} fontSize={'20px'} fontWeight={'bold'}>
                 <Box>
                 Total Products: {cart.totalQuantity}

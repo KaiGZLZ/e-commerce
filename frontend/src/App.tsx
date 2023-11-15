@@ -48,7 +48,6 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
 
-            <Route path="/categories/:categorie" element={<Categorie />} />
             <Route element={<PrivateRoute allowedRoles={[userEnum.role.admin]} />} ><Route path="/categories/register" element={<RegisterCategorie />} /></Route>
 
 
@@ -61,6 +60,7 @@ function App() {
 
             {/* Products section */}
             <Route path="/products/product/:productId" element={<ProductPage />} />
+            <Route path="/products/category/:categorie" element={<Categorie />} />
             <Route element={<PrivateRoute allowedRoles={[userEnum.role.admin]} />} ><Route path="/products/register" element={<ProductRegisterPage />} /></Route>
 
           </Switch>

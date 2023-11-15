@@ -40,6 +40,9 @@ export const cartSlice = createSlice({
 
       const product = state.products.find(product => product.id === action.payload?.id)
       if (product) {
+        if(product.quantity >= product.stock) {
+          return
+        }
         product.quantity += 1
       } else {
         const newProduct = { ...action.payload, quantity: 1 }

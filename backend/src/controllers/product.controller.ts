@@ -10,6 +10,7 @@ router.post('/register', productRegisterValidation, productRegister)
 router.delete('/delete', productDeleteValidation, productDelete)
 router.patch('/update', productUpdateValidation, productUpdate)
 router.get('/product/:id', productGet)
+router.get('/table', productTable)
 
 module.exports = router
 
@@ -39,4 +40,11 @@ function productGet(req: Request, res: Response, next: NextFunction): void {
     productService.productGet(req.params.id)
         .then(data => res.json({ data }))
         .catch(err => { next(err) })
+}
+
+// Get a product
+function productTable(req: Request, res: Response, next: NextFunction): void {
+    productService.productTable(req.query)
+        .then(data => res.json({ data }))
+        .catch(err => { console.log(err); next(err) })
 }

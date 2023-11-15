@@ -174,7 +174,7 @@ function Navbar() {
                 isFetchingCategories ?
                   <Spinner /> :
                   categories ? categories.map((categorie) => (
-                    <Link to={`/products/list/${categorie.name}`} key={categorie._id}>
+                    <Link to={`/products/category/${categorie.name}`} key={categorie._id}>
                       <Flex alignItems="center"  color="white" marginY={'1rem'}>
                         {categorie.name}
                       </Flex>
@@ -225,7 +225,7 @@ function Navbar() {
                 isFetchingCategories ?
                   <Spinner /> :
                   categories ? categories.map((categorie) => (
-                    <Link to={`/products/list/${categorie.name}`} key={categorie._id}>
+                    <Link to={`/products/category/${categorie.name}`} key={categorie._id}>
                       <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
                         {categorie.name}
                       </Flex>

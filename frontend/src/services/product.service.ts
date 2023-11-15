@@ -1,5 +1,14 @@
 import { api } from './servicesConfig/api.service'
 
+type getTableProductsType = {
+  result: Product[]
+  total: number
+}
+
+type getProductType = {
+  result: Product
+}
+
 export const productsService = api.injectEndpoints({
   endpoints: (builder) => ({
     registerProducts: builder.query({
@@ -17,9 +26,9 @@ export const productsService = api.injectEndpoints({
         },
       }),
     }),
-    getTableProducts: builder.query<string, Product[]>({
+    getTableProducts: builder.query< getTableProductsType, string>({
       query: (data) => ({
-        url: 'products/table/'+data,
+        url: 'products/table'+data,
         method: 'GET',
         // This is the same as passing 'text'
         responseHandler: (response) => {
@@ -30,8 +39,10 @@ export const productsService = api.injectEndpoints({
           return response.json()
         },
       }),
+      transformResponse: (response: { data: getTableProductsType }) => response.data,
+      keepUnusedDataFor: 60,
     }),
-    getProduct: builder.query<Product, string>({
+    getProduct: builder.query<getProductType, string>({
       query: (data) => ({
         url: 'products/product/'+data,
         method: 'GET',
@@ -44,6 +55,8 @@ export const productsService = api.injectEndpoints({
           return response.json()
         },
       }),
+      transformResponse: (response: { data: getProductType }) => response.data,
+      keepUnusedDataFor: 60,
     }),
     deleteProducts: builder.query({
       query: (data) => ({

@@ -6,15 +6,6 @@ import { useDispatch } from 'react-redux'
 import { addCartItem } from '../redux/slices/cartSlice'
 import { useNavigate } from 'react-router-dom'
 
-interface Product {
-  id: string;
-  image: string;
-  category: string;
-  name: string;
-  price: number;
-  rating: number;
-}
-
 function ProductCard({ product }: { product: Product })  {
   const [state, setState] = useState(true)
   const dispatch = useDispatch()
@@ -35,7 +26,7 @@ function ProductCard({ product }: { product: Product })  {
       onClick={() => navigate(`/products/product/${product.id}`, { state: product.id } )}
     >
       <Box position={'relative'} overflow={'hidden'}>
-        <Image src={product.image} alt={product.name} objectFit="cover" rounded={20} maxHeight="300px" w="100%" />
+        <Image src={'https://pczatelca.com/images/productos/491/1686882805_Probador%20de%20Bateria%20C%201.png'} alt={product.name} objectFit="cover" rounded={20} maxHeight="300px" w="100%" />
 
         {/* Icon plus button */}
         <Flex
@@ -59,23 +50,23 @@ function ProductCard({ product }: { product: Product })  {
         </Flex>
       </Box>
 
-      <Flex align="center" mt={2}>
+      <Flex align="center" mt={2} paddingX={5}>
         <Badge colorScheme="teal">{product.category}</Badge>
       </Flex>
 
-      <Text mt={2} fontWeight="semibold" fontSize="lg" noOfLines={2}>
+      <Text mt={2} fontWeight="semibold" fontSize="lg" noOfLines={2} paddingX={5}>
         {product.name}
       </Text>
 
-      <Text mt={1} fontWeight="bold">
+      <Text mt={1} fontWeight="bold" paddingX={5}>
           ${product.price}
       </Text>
 
-      <Flex align="center" mt={1}>
+      <Flex align="center" mt={1} paddingX={5}>
         {[...Array(product.rating)].map((_, index) => (
           <StarIcon key={index} color="teal.500" />
         ))}
-        <Text ml={2}>{product.rating}</Text>
+        {product.numberOfVotes ? <Text ml={2}>{product.rating}</Text> : <Text ml={2}>No reviews yet</Text>}
       </Flex>
 
       {/* Buttons */}

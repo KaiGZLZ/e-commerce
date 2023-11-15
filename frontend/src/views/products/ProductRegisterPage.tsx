@@ -3,7 +3,6 @@ import React from 'react'
 import { Box, Flex, Input, InputGroup, InputLeftElement,Button, Spinner, Select, Tag, TagLabel, TagCloseButton, Textarea, IconButton } from '@chakra-ui/react'
 import { ArrowRightIcon } from '@chakra-ui/icons'
 //import { useDispatch } from 'react-redux'
-import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { alertSlice } from '../../redux/slices/alertSlice'
@@ -12,6 +11,7 @@ import { NumericFormat } from 'react-number-format'
 import { NumberFormatValues } from 'react-number-format/types/types'
 import { useLazyRegisterProductsQuery } from '../../services/product.service'
 import Navbar from '../../components/Navbar'
+import { history } from '../../__helpers/history'
 
 type RegisterData = {
   name: string
@@ -92,6 +92,11 @@ function ProductRegisterPage() {
     <Flex alignItems={'center'} justifyContent={'center'} width={'100%'} maxWidth={'1200px'} bg={'whiteAlpha.800'}>
       {/* Form container */}
       <Flex flexDir={'column'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} maxWidth={'1200px'} border={'1px'} padding={'20px'} color={'gray.600'} rounded={10} bg={'gray.50'} marginTop={'50px'} >
+        <Flex width={'100%'} justifyContent={'initial'}>
+          <Box width={'auto'} fontSize={15} textDecor={'underline'} color={'gray.600'} cursor={'pointer'} _hover={{ color:'#fcb941' }} onClick={() => history.back()}>
+            {'Back'}
+          </Box>
+        </Flex>
         <Box fontSize={30} fontWeight={'bold'} textAlign={'center'} marginBottom={'20px'}>Register product</Box>
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Product Name */}
@@ -253,25 +258,16 @@ function ProductRegisterPage() {
             </InputGroup>
             {errors.stock && <span style={{ color: 'red' }}>{errors.stock?.message?.toString()}</span>}
           </Box>
-          {/* Login page */}
-          <Flex marginBottom={'20px'} width={'100%'} flexDir={['column', 'column', 'row', 'row']} justifyContent={['','', 'space-between','space-between']} paddingX={'20px'}>
-            <Link to={'/login'}>
-              <Box  fontSize={15} textDecor={'underline'} color={'gray.600'} _hover={{ color:'#fcb941' }}>
-                {'Go to Login'}
-              </Box>
-            </Link>
-            <Link to={'/'}>
-              <Box fontSize={15} textDecor={'underline'} color={'gray.600'} _hover={{ color:'#fcb941' }}>
-                {'Homepage'}
-              </Box>
-            </Link>
+
+          {/* Submit button */}
+          <Flex justifyContent={'space-between'}>
+            <Button disabled={isFetching || isFetchingCategories} type='submit' colorScheme="teal" size="sm">
+              { isFetching ? <Spinner /> : ''} Register
+            </Button>
+            <Button disabled={isFetching || isFetchingCategories} colorScheme={'gray'} size="sm" onClick={() => { history.back() }} >
+              { isFetching ? <Spinner /> : ''} Cancel
+            </Button>
           </Flex>
-
-
-          {/* Login button */}
-          <Button disabled={isFetching || isFetchingCategories} type='submit' colorScheme="teal" size="sm">
-            { isFetching ? <Spinner /> : ''} Register
-          </Button>
         </form>
       </Flex>
     </Flex>

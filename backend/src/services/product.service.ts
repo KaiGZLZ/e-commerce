@@ -43,6 +43,32 @@ export async function productRegister(data: productRegisterType): Promise<object
     }
 }
 
+export async function productTable(query: any): Promise<object> {
+    const skipConstant = 0
+    const limitConstatnt = 20
+
+    // If there is sort query, add it to the sort object
+    let sort: any = {}
+    if (query.order && query.orderType) {
+        sort = { ...sort, ...{ [query.order]: query.orderType } }
+    }
+
+    // If there is a search query, add it to the filter object
+    const filter: any = {}
+
+    if (query.category) {
+        filter.category = query.category
+    }
+
+    const result = await Product.find(filter).sort(sort).skip(skipConstant).limit(limitConstatnt)
+    const total = await Product.find(filter).countDocuments()
+
+    return {
+        result,
+        total
+    }
+}
+
 /**  Funtion to Delete an product
  *
  * @param {object} data
@@ -111,7 +137,11 @@ export async function productUpdate(data: productUpdateType): Promise<void> {
  *
  */
 export async function productGet(id: string): Promise<object | null> {
-    return await Product.findById(id)
+    const result = await Product.findById(id)
+
+    return {
+        result
+    }
 }
 
 /**  Funtion to get a product
