@@ -1,11 +1,10 @@
-import mongoose from 'mongoose'
-import moment from 'moment'
+import mongoose, { SchemaTypes } from 'mongoose'
 
 const { Schema } = mongoose
 
 const productSchema: any = new Schema(
     {
-        user: { type: 'ObjectId', ref: 'User' },
+        user: { type: SchemaTypes.ObjectId, ref: 'User' },
         name: { type: String, required: true },
         price: { type: Number, required: true },
         description: { type: String, required: true },
@@ -18,23 +17,11 @@ const productSchema: any = new Schema(
         lastWholesalePrice: { type: Number, default: 0 },
         orderMinForWholesale: { type: Number, default: 0 },
         images: [String],
-        stock: { type: Number, default: 0 },
-        createdDate: { type: Date, default: getTimeZoneDate },
-        updatedDate: { type: Date }
-
-    }, {
-        toJSON: {
-            virtuals: true,
-            transform: function(_doc: any, ret: any) {
-                delete ret._id
-            }
-        }
+        stock: { type: Number, default: 0 }
+    },
+    {
+        timestamps: true
     }
 )
-
-// Get date with Venezuela time
-function getTimeZoneDate(): moment.Moment {
-    return moment().subtract(4, 'hours')
-}
 
 export = mongoose.model('Product', productSchema)

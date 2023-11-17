@@ -1,5 +1,5 @@
 declare interface Product {
-    id: string
+    _id: string
     image: string
     category: string
     name: string
@@ -20,4 +20,30 @@ declare interface user {
   email: string
   role: number
 }
+
+  type SaleProduct = {
+    product: Product; // 'ObjectId' is typically a string in MongoDB
+    name: string;
+    description: string;
+    price: number;
+    wholesalePrice: number;
+    category: string;
+    orderMinForWholesale: number;
+    images: string[];
+    quantity: number;
+    total: number;
+  };
+
+declare interface Sale {
+  _id: string
+  products: SaleProduct[]
+  user: user | undefined
+  email: string
+  total: number
+  totalQuantity: number
+  status: number
+  createdAt: string
+  updatedAt: string
+}
+
 

@@ -11,9 +11,11 @@ const exceptions: Array<string | RegExp> = [
     /^\/user\/authenticate/, // authentication route
     /^\/user\/forgotten-password/, // forgoten-password route
     /^\/user\/change-password/, // forgoten-password route
-    /^\/products\/product\//, // forgoten-password route
-    /^\/products\/table/, // forgoten-password route
-    /^\/category\/get-all/
+    /^\/products\/product\//, // get product by id
+    /^\/products\/table/, // products table
+    /^\/category\/get-all/,
+    /^\/sales\/register/, // register sale
+    /^\/sales\/get-by-id/ // get sale by id
 ]
 
 const authMiddleware = async(req: Request, _res: Response, next: NextFunction): Promise<void> => {

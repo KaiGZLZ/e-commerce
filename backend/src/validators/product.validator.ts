@@ -63,7 +63,7 @@ export const productRegisterValidation = [
 ]
 
 export const productDeleteValidation = [
-    validateObjectId('data.id'),
+    validateObjectId('data.id', 'products id'),
 
     (req: Request, res: Response): Response | undefined => {
         const errors = validationResult(req)

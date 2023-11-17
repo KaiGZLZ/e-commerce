@@ -10,7 +10,7 @@ interface ProductGridProps {
 function ProductGrid({ devCondition = false, products } : ProductGridProps) {
   const productsDev = [
     {
-      id: '1',
+      _id: '1',
       image: 'https://pczatelca.com/images/productos/491/1686882805_Probador%20de%20Bateria%20C%201.png',
       category: 'Electronics',
       name: 'Product 111',
@@ -23,7 +23,7 @@ function ProductGrid({ devCondition = false, products } : ProductGridProps) {
       stock: 100
     },
     {
-      id: '2',
+      _id: '2',
       image: 'https://pczatelca.com/images/productos/491/1686882805_Probador%20de%20Bateria%20C%201.png',
       category: 'Electronics',
       name: 'Produsssssssdf asdfasdfa sdfas dfasdfas fasd fasdf asd fasdf adsfasdf asdf asdf asfas fa s fadsf asdfadsf adsfa f asdfct 1',
@@ -36,7 +36,7 @@ function ProductGrid({ devCondition = false, products } : ProductGridProps) {
       stock: 100
     },
     {
-      id: '3',
+      _id: '3',
       image: 'https://pczatelca.com/images/productos/491/1686882805_Probador%20de%20Bateria%20C%201.png',
       category: 'Electronics',
       name: 'Product 1',
@@ -56,10 +56,10 @@ function ProductGrid({ devCondition = false, products } : ProductGridProps) {
       {
         devCondition && products ?
           products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product._id} product={product} />
           )) :
           productsDev.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product._id} product={product} />
           ))
       }
     </Grid>

@@ -95,6 +95,9 @@ export function validateNumber(path: string, fieldName: string): ValidationChain
         .isNumeric()
         .withMessage(`The ${fieldName} must be numeric`)
         .bail()
+        .customSanitizer((value) => {
+            return Number(Number(value).toFixed(2))
+        })
 }
 
 /**
@@ -116,19 +119,15 @@ export function validatePositiveNumber(path: string, fieldName: string): Validat
         })
         .withMessage(`The ${fieldName} must be greater or equal to zero`)
         .bail()
+        .customSanitizer((value) => {
+            return Number(Number(value).toFixed(2))
+        })
 }
 
-export function validateObjectId(path: string): ValidationChain {
+export function validateObjectId(path: string, fieldName: string): ValidationChain {
     return check(path)
         .trim()
-        .escape()
-        .not()
-        .isEmpty()
-        .withMessage('User ObjectId can not be empty!')
-        .bail()
-        .custom((value) => {
-            return !value.includes(' ')
-        })
-        .withMessage('ObjectId can not have white spaces!')
+        .isMongoId()
+        .withMessage(`The ${fieldName} must be a valid ObjectId`)
         .bail()
 }

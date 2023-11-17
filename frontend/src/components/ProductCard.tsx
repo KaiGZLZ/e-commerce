@@ -23,7 +23,7 @@ function ProductCard({ product }: { product: Product })  {
       _hover={{ shadow:'md' }}
       onMouseOver={() => setState(false)}
       onMouseLeave={() => setState(true)}
-      onClick={() => navigate(`/products/product/${product.id}`, { state: product.id } )}
+      onClick={() => navigate(`/products/product/${product._id}`, { state: product._id } )}
     >
       <Box position={'relative'} overflow={'hidden'}>
         <Image src={'https://pczatelca.com/images/productos/491/1686882805_Probador%20de%20Bateria%20C%201.png'} alt={product.name} objectFit="cover" rounded={20} maxHeight="300px" w="100%" />

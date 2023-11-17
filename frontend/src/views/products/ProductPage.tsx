@@ -81,6 +81,10 @@ function ProductPage() {
             <AtSignIcon margin={'0 10px'} />
           </Flex>
         </Flex>
+        { (product?.orderMinForWholesale && product?.wholesalePrice && product?.price) && <>
+          <Text fontSize={'15px'} fontWeight={'bold'}>If you buy {product?.orderMinForWholesale} units or more, you will get a discount! of {((1-product?.wholesalePrice/product?.price) * 100).toFixed(2)}% </Text>
+        </>
+        }
       </Flex>
     </Flex>
 

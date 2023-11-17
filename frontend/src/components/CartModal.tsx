@@ -1,12 +1,14 @@
 
 import React from 'react'
-import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Icon, Flex, Box, Grid, IconButton, useDisclosure, Collapse } from '@chakra-ui/react'
+import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Icon, Text, Flex, Box, Grid, IconButton, useDisclosure, Collapse, Input, FormLabel, FormControl, Spinner } from '@chakra-ui/react'
 import { ArrowBackIcon, ChevronDownIcon, ChevronUpIcon, CloseIcon } from '@chakra-ui/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../redux/store/store'
 import { NumericFormat } from 'react-number-format'
 import { cartSlice } from '../redux/slices/cartSlice'
 import { Link } from 'react-router-dom'
+import { parseLocarstorageUser } from '../__helpers/isUser'
+import { useRegisterSaleMutation } from '../services/sale.service'
 
 export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
 
@@ -14,8 +16,57 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
   const cart = useSelector((state: RootState) => state.cart)
   const dispatch = useDispatch()
   const btnRef = React.useRef(null)
+  const user = parseLocarstorageUser()
 
   const { isOpen: openTotals, onToggle } = useDisclosure({ defaultIsOpen: true })
+
+  const { isOpen: isOpenConfirmation, onClose: onCloseConfirmation, onToggle: onToggleConfirmation } = useDisclosure()
+
+  const [email, setEmail] = React.useState('')
+  const [errorEmailMessage, setErrorEmailMessage] = React.useState('')
+
+  const [registerSale, { isLoading }] = useRegisterSaleMutation()
+
+  const confirmCheckout = () => {
+
+    // If not user, validate email
+    if(!user){
+      if (!email) {
+        setErrorEmailMessage('The email is required')
+        return
+      }
+      // Pattern email
+      if (!email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
+        setErrorEmailMessage('The email is not valid')
+        return
+      }
+      setErrorEmailMessage('')
+    }
+
+    const dataToSend = {
+      token: user ? localStorage.getItem('token') : null,
+      products: cart.products,
+      total: cart.total,
+      totalQuantity: cart.totalQuantity,
+      email: user ? user.email : email
+    }
+
+
+    registerSale(dataToSend)
+      .unwrap()
+      .then((res) => {
+
+        console.log({ res })
+        /*dispatch(cartSlice.actions.clearCart())
+        onCloseConfirmation()
+        onClose()*/
+      })
+      .catch((err) => {
+        console.log({ err })
+      })
+
+    onCloseConfirmation()
+  }
 
   return (
     <>
@@ -41,22 +92,33 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
               Keep buying
           </ModalCloseButton>
 
+          {/* Cart Body */}
           <ModalBody background={'#d1a049'}>
             <ModalHeader background={'white'} textAlign={'center'} fontWeight={'bold'} marginBottom={'10px'} borderRadius={10}>Cart items</ModalHeader>
             {
               cart.products.map((product, index) => {
                 return <Box key={index} background={'white'} borderRadius={10} marginBottom={'10px'} paddingBottom={'10px'}>
-                  <Link to={`/products/product/${product.id}`}>
+                  <Link to={`/products/product/${product._id}`}>
                     <Grid  gridTemplateColumns={'repeat(3, 1fr)'} justifyContent={'space-between'} alignItems={'center'} textAlign={'center'}>
                       <Box borderRadius={10} overflow={'hidden'}>
                         <img src={'https://pczatelca.com/images/productos/491/1686882805_Probador%20de%20Bateria%20C%201.png'} alt={product.name}  />
                       </Box>
-                      <Box wordBreak={'break-word'} maxHeight={'120px'} overflow={'hidden'}>
+                      <Box wordBreak={'break-word'} maxHeight={'120px'} overflow={'hidden'} padding={'1rem'}>
                         {product.name}
                       </Box>
-                      <Box>
-                        <NumericFormat value={product.price} displayType={'text'} decimalScale={2} thousandSeparator='.' decimalSeparator=',' prefix={'$'} />
-                      </Box>
+                      <Grid gridTemplateColumns={'repeat(2, 1fr)'} alignItems={'center'} textAlign={'center'} fontWeight={'bold'}>
+
+                        { (product.quantity < product.orderMinForWholesale)  ? <>
+                          <Text>Price:</Text>
+                          <NumericFormat value={product.price} displayType={'text'} decimalScale={2} thousandSeparator='.' decimalSeparator=',' prefix={'$'} />
+                        </> : <>
+                          <Text color={'red'} textDecorationLine={'line-through'}>Price:</Text>
+                          <NumericFormat style={{ color: 'red', textDecorationLine: 'line-through' }} value={product.price} displayType={'text'} decimalScale={2} thousandSeparator='.' decimalSeparator=',' prefix={'$'} />
+
+                          <Text>Wholesale Price </Text>
+                          <NumericFormat value={product.wholesalePrice} displayType={'text'} decimalScale={2} thousandSeparator='.' decimalSeparator=',' prefix={'$'} />
+                        </>}
+                      </Grid>
                     </Grid>
                   </Link>
                   <Grid gridTemplateColumns={'repeat(2, 1fr)'} textAlign={'center'}>
@@ -64,7 +126,7 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
                       <IconButton
                         aria-label={'Remove'}
                         icon={<ArrowBackIcon />}
-                        onClick={() => dispatch(cartSlice.actions.deleteCartItem(product.id))}
+                        onClick={() => dispatch(cartSlice.actions.deleteCartItem(product._id))}
                         marginX={'10px'}
                       />
                         Quantity: {product.quantity}
@@ -76,7 +138,7 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
                       />
                     </Flex>
                     <Flex fontWeight={'bold'} maxHeight={'50px'} alignItems={'center'} justifyContent={'center'} width={'auto'} >
-                      Sub-Total:<NumericFormat value={product.quantity * product.price} displayType={'text'} decimalScale={2} thousandSeparator='.' decimalSeparator=',' prefix={'$'} />
+                      Sub-Total:<NumericFormat value={product.total} displayType={'text'} decimalScale={2} thousandSeparator='.' decimalSeparator=',' prefix={'$'} />
                     </Flex>
                   </Grid>
                 </Box>
@@ -85,6 +147,7 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
             }
           </ModalBody>
 
+          {/* Totals and button section */}
           <ModalFooter display={'block'}>
             <Flex width={'100%'} alignItems={'center'} justifyContent={'end'} height={0}>
               {
@@ -136,13 +199,66 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
 
               <Flex justifyContent={'space-between'} marginBottom={'25px'} fontWeight={'bold'}>
                 <Button onClick={onClose}>Close</Button>
-                <Button colorScheme={'green'}>Checkout</Button>
+                <Button colorScheme={'green'} onClick={onToggleConfirmation} disabled={isLoading}>
+                  {isLoading ? <Spinner/> : ''} Checkout
+                </Button>
               </Flex>
 
             </Collapse>
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      {
+        user ?
+          <>
+            {/* Modal confirmation */}
+            <Modal isCentered isOpen={isOpenConfirmation} onClose={onCloseConfirmation} size={'xl'}>
+              <ModalOverlay
+                bg='blackAlpha.500'
+              />
+              <ModalContent>
+                <ModalHeader>Modal With User</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <Text> Hi <b>{user.firstname}</b>!. Please confirm your sale</Text>
+                </ModalBody>
+                <ModalFooter>
+                  <Button onClick={confirmCheckout} bg={'green'} color={'white'} disabled={isLoading}>
+                    {isLoading ? <Spinner/> : ''} Confirm
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+          </>
+          :
+          <>
+            {/* Modal confirmation without an user logged in */}
+            <Modal isCentered isOpen={isOpenConfirmation} onClose={() => {setErrorEmailMessage(''); onCloseConfirmation()}} size={'xl'}>
+              <ModalOverlay
+                bg='blackAlpha.500'
+              />
+              <ModalContent>
+                <ModalHeader>Modal Without User</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <Text>Oh! It seems that you are not logged in. Please enter your email to sent all the sale information</Text>
+                  &nbsp;
+                  <FormControl>
+                    <FormLabel>Email</FormLabel>
+                    <Input onChange={(e) => {setEmail(e.target.value)}} placeholder='Email' />
+                  </FormControl>
+                  {!!errorEmailMessage && <span style={{ color: 'red' }}>{errorEmailMessage}</span>}
+                </ModalBody>
+                <ModalFooter>
+                  <Button onClick={confirmCheckout} bg={'green'} color={'white'} disabled={isLoading}>
+                    {isLoading ? <Spinner/> : ''} Confirm
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+          </>
+      }
     </>
   )
 }

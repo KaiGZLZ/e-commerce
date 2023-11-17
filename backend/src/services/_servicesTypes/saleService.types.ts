@@ -1,6 +1,7 @@
-import { type ObjectId } from 'mongoose'
+import { type ObjectId } from 'mongodb'
 
 interface saleProduct {
+    _id: ObjectId | string
     product: ObjectId | string
     name: string
     price: number
@@ -9,19 +10,17 @@ interface saleProduct {
     images: string
 
     quantity: number
-    exchangeRate: number
     total: number
 }
 
 export interface saleRegisterType {
-    _user: _user
-    sale: {
-        user: ObjectId | string
-        products: saleProduct[]
-        total: number
-        exchangeRate: number
-        comment: string
-    }
+    token: string | null
+    products: saleProduct[]
+    total: number
+    exchangeRate: number
+    email: string
+
+    user: ObjectId | undefined
 }
 
 export interface saleCancelType {
@@ -29,9 +28,9 @@ export interface saleCancelType {
     id: ObjectId | string
 }
 
-export interface saleGetType {
-    _user: _user
-    id: ObjectId | string
+export interface saleGetByIdType {
+    token: string
+    id: string
 }
 
 export interface saleChangePaymentStatusType {

@@ -2,7 +2,9 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 
 interface ArrayProduct extends Product {
+  product: string; // 'ObjectId' is typically a string in MongoDB
   quantity: number;
+  total: number;
 }
 
 interface Cart {
@@ -28,6 +30,10 @@ export const cartSlice = createSlice({
         return total + product.quantity
       }, 0)
       state.total = state.products.reduce((total, product) => {
+
+        if(product.quantity >= product.orderMinForWholesale){
+          return total + (product.wholesalePrice * product.quantity)
+        }
         return total + (product.price * product.quantity)
       }, 0)
     },
@@ -38,20 +44,30 @@ export const cartSlice = createSlice({
         return
       }
 
-      const product = state.products.find(product => product.id === action.payload?.id)
+      const product = state.products.find(product => product._id === action.payload?._id)
       if (product) {
         if(product.quantity >= product.stock) {
           return
         }
         product.quantity += 1
+        if(product.quantity >= product.orderMinForWholesale){
+          product.total = product.quantity * product.wholesalePrice
+        }
+        else {
+          product.total = product.quantity * product.price
+        }
       } else {
-        const newProduct = { ...action.payload, quantity: 1 }
+        const newProduct = { ...action.payload, quantity: 1, total: action.payload.price, product: action.payload._id }
         state.products.push(newProduct)
       }
       // The total quantity of products in the cart is increased by 1
       state.totalQuantity += 1
       // The total price of products in the cart is increased by the price of the product
       state.total = state.products.reduce((total, product) => {
+
+        if(product.quantity >= product.orderMinForWholesale){
+          return total + (product.wholesalePrice * product.quantity)
+        }
         return total + (product.price * product.quantity)
       }, 0)
 
@@ -59,18 +75,30 @@ export const cartSlice = createSlice({
     },
     deleteCartItem: (state, action: PayloadAction<string>) => {
 
-      const product = state.products.find(product => product.id === action.payload)
+      const product = state.products.find(product => product._id === action.payload)
       if (!product) {
         return
       }
       product.quantity -= 1
       if (product.quantity === 0) {
-        state.products = state.products.filter(product => product.id !== action.payload)
+        state.products = state.products.filter(product => product._id !== action.payload)
+      }
+      else {
+        if(product.quantity >= product.orderMinForWholesale){
+          product.total = product.quantity * product.wholesalePrice
+        }
+        else {
+          product.total = product.quantity * product.price
+        }
       }
       // The total quantity of products in the cart is reduced by 1
       state.totalQuantity -= 1
       // The total price of products in the cart is reduced by the price of the product
       state.total = state.products.reduce((total, product) => {
+
+        if(product.quantity >= product.orderMinForWholesale){
+          return total + (product.wholesalePrice * product.quantity)
+        }
         return total + (product.price * product.quantity)
       }, 0)
 
