@@ -1,10 +1,27 @@
-import mongoose, { SchemaTypes } from 'mongoose'
-
+import mongoose from 'mongoose'
 const { Schema } = mongoose
 
-const productSchema: any = new Schema(
+interface productSchemaType {
+    user: mongoose.Types.ObjectId
+
+    name: string
+    price: number
+    description: string
+    rating: number
+    numberOfVotes: number
+    category: string
+    tags: string[]
+    lastPrice: number
+    wholesalePrice: number
+    lastWholesalePrice: number
+    orderMinForWholesale: number
+    images: string[]
+    stock: number
+}
+
+const productSchema = new Schema<productSchemaType>(
     {
-        user: { type: SchemaTypes.ObjectId, ref: 'User' },
+        user: { type: Schema.Types.ObjectId, ref: 'User' },
         name: { type: String, required: true },
         price: { type: Number, required: true },
         description: { type: String, required: true },
@@ -24,4 +41,4 @@ const productSchema: any = new Schema(
     }
 )
 
-export = mongoose.model('Product', productSchema)
+export = mongoose.model<productSchemaType>('Product', productSchema)

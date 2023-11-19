@@ -1,10 +1,16 @@
 import mongoose from 'mongoose'
 const { Schema } = mongoose
 
-const categorySchema = new Schema({
+interface categorySchemaType {
+    name: string
+    subCategories: mongoose.Types.ObjectId[]
+    description: string
+}
+
+const categorySchema = new Schema<categorySchemaType>({
     name: { type: String, required: true, trim: true, unique: true },
-    subCategories: [{ type: 'ObjectId', ref: 'SubCategory' }],
+    subCategories: [{ type: Schema.Types.ObjectId, ref: 'SubCategory' }],
     description: { type: String, required: true, trim: true }
 }, { timestamps: true })
 
-export = mongoose.model('Category', categorySchema)
+export = mongoose.model<categorySchemaType>('Category', categorySchema)

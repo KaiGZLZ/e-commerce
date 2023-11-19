@@ -1,20 +1,22 @@
 
 import React from 'react'
-import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Icon, Text, Flex, Box, Grid, IconButton, useDisclosure, Collapse, Input, FormLabel, FormControl, Spinner } from '@chakra-ui/react'
+import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Icon, Text, Flex, Box, Grid, IconButton, useDisclosure, Collapse, Input, FormLabel, FormControl } from '@chakra-ui/react'
 import { ArrowBackIcon, ChevronDownIcon, ChevronUpIcon, CloseIcon } from '@chakra-ui/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../redux/store/store'
 import { NumericFormat } from 'react-number-format'
 import { cartSlice } from '../redux/slices/cartSlice'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { parseLocarstorageUser } from '../__helpers/isUser'
 import { useRegisterSaleMutation } from '../services/sale.service'
+import { alertSlice } from '../redux/slices/alertSlice'
 
 export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
 
   // Cart data
   const cart = useSelector((state: RootState) => state.cart)
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const btnRef = React.useRef(null)
   const user = parseLocarstorageUser()
 
@@ -55,17 +57,13 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
     registerSale(dataToSend)
       .unwrap()
       .then((res) => {
-
-        console.log({ res })
-        /*dispatch(cartSlice.actions.clearCart())
-        onCloseConfirmation()
-        onClose()*/
+        dispatch(cartSlice.actions.clearCart())
+        dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: 'Sale registered' }))
+        navigate(`/sales/sale/${res.saleId}`)
       })
       .catch((err) => {
-        console.log({ err })
+        setErrorEmailMessage(err.data)
       })
-
-    onCloseConfirmation()
   }
 
   return (
@@ -190,17 +188,22 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
             <Collapse startingHeight={0} in={openTotals}>
               <Flex justifyContent={'space-between'} flexDirection={'column'} marginBottom={'25px'} fontSize={'20px'} fontWeight={'bold'}>
                 <Box>
-                Total Products: {cart.totalQuantity}
+                  Total Products: {cart.totalQuantity}
                 </Box>
                 <Box>
-                Total Price: <NumericFormat value={cart.total} displayType={'text'} decimalScale={2} thousandSeparator='.' decimalSeparator=',' prefix={'$'} />
+                  Total Price: <NumericFormat value={cart.total} displayType={'text'} decimalScale={2} thousandSeparator='.' decimalSeparator=',' prefix={'$'} />
                 </Box>
               </Flex>
 
               <Flex justifyContent={'space-between'} marginBottom={'25px'} fontWeight={'bold'}>
                 <Button onClick={onClose}>Close</Button>
-                <Button colorScheme={'green'} onClick={onToggleConfirmation} disabled={isLoading}>
-                  {isLoading ? <Spinner/> : ''} Checkout
+                <Button
+                  colorScheme={'green'}
+                  onClick={onToggleConfirmation}
+                  isLoading={isLoading}
+                  loadingText='Registering'
+                >
+                  Checkout
                 </Button>
               </Flex>
 
@@ -224,8 +227,12 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
                   <Text> Hi <b>{user.firstname}</b>!. Please confirm your sale</Text>
                 </ModalBody>
                 <ModalFooter>
-                  <Button onClick={confirmCheckout} bg={'green'} color={'white'} disabled={isLoading}>
-                    {isLoading ? <Spinner/> : ''} Confirm
+                  <Button bg={'green'} color={'white'}
+                    onClick={confirmCheckout}
+                    isLoading={isLoading}
+                    loadingText='Registering...'
+                  >
+                    Confirm
                   </Button>
                 </ModalFooter>
               </ModalContent>
@@ -251,8 +258,13 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
                   {!!errorEmailMessage && <span style={{ color: 'red' }}>{errorEmailMessage}</span>}
                 </ModalBody>
                 <ModalFooter>
-                  <Button onClick={confirmCheckout} bg={'green'} color={'white'} disabled={isLoading}>
-                    {isLoading ? <Spinner/> : ''} Confirm
+                  <Button bg={'green'} color={'white'}
+                    onClick={confirmCheckout}
+                    disabled={isLoading}
+                    isLoading={isLoading}
+                    loadingText='Registering...'
+                  >
+                    Confirm
                   </Button>
                 </ModalFooter>
               </ModalContent>

@@ -4,8 +4,8 @@ export default {
         canceled: 0,
         pendingPayment: 1,
         pendingConfirmation: 2,
-        confirmed: 3,
-        sent: 4,
+        preparing: 3,
+        onTheRoad: 4,
         received: 5
 
     },
@@ -14,8 +14,8 @@ export default {
         0: 'Canceled',
         1: 'Pending payment',
         2: 'Pending confirmation',
-        3: 'Confirmed',
-        4: 'Product Sent',
+        3: 'Preparing',
+        4: 'On the road',
         5: 'Received'
     }
 }

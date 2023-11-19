@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { Box, Flex, Input, InputGroup, InputLeftElement,Button, Spinner } from '@chakra-ui/react'
+import { Box, Flex, Input, InputGroup, InputLeftElement,Button } from '@chakra-ui/react'
 import { ArrowRightIcon } from '@chakra-ui/icons'
 //import { useDispatch } from 'react-redux'
 import { useForm  } from 'react-hook-form'
@@ -87,11 +87,11 @@ function RegisterCategorie() {
           </Box>
           {/* Submit button */}
           <Flex justifyContent={'space-between'}>
-            <Button disabled={isFetching} type='submit' colorScheme="teal" size="sm">
-              { isFetching ? <Spinner /> : ''} Register
+            <Button isLoading={isFetching} loadingText='Registering' type='submit' colorScheme="teal" size="sm">
+              Register
             </Button>
-            <Button disabled={isFetching} colorScheme={'gray'} size="sm" onClick={() => { history.back() }} >
-              { isFetching ? <Spinner /> : ''} Cancel
+            <Button isDisabled={isFetching} colorScheme={'gray'} size="sm" onClick={() => { history.back() }} >
+              Cancel
             </Button>
           </Flex>
         </Flex>

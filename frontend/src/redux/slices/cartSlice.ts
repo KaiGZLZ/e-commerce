@@ -106,6 +106,7 @@ export const cartSlice = createSlice({
     },
     clearCart: (state) => {
       state.products = []
+      state.totalQuantity = 0
       state.total = 0
 
       localStorage.setItem('cart', JSON.stringify(state.products))

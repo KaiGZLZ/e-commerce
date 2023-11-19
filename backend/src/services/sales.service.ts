@@ -8,7 +8,7 @@ import { type saleRegisterType, type saleGetByIdType, type saleChangePaymentStat
 import userEnum from '../__helpers/enums/user.enum'
 import saleEnum from '../__helpers/enums/sales.enum'
 import config from '../config'
-import { UnauthorizedError } from '../__helpers/customErrors'
+import { ConflictError, UnauthorizedError } from '../__helpers/customErrors'
 
 export async function saleRegister(data: saleRegisterType): Promise<object> {
     // Verify that the sale was made by an user
@@ -32,11 +32,11 @@ export async function saleRegister(data: saleRegisterType): Promise<object> {
     } else {
         // Verify that the email is not already registered
         const existingUser = await User.findOne({ email: data.email }).lean()
-        if (existingUser) throw new Error('This email is already registered')
+        if (existingUser) throw new ConflictError('This email is already registered')
 
         // Verify that this email doesn't have a sale pending payment
         const pendingSale = await SaleModel.findOne({ email: data.email, status: saleEnum.status.pendingPayment }).lean()
-        if (pendingSale) throw new Error('This email already has a pending payment')
+        if (pendingSale) throw new UnauthorizedError('This email already has a pending payment')
     }
 
     // Veryfy that the product data is correct
@@ -110,7 +110,7 @@ export async function saleRegister(data: saleRegisterType): Promise<object> {
 
     const subject = 'You made a Purchase!!'
     const text = 'Thanks for your purchase!!'
-    const html = saleRegisterMail(process.env.URL_WATCH_PURCHASE_DETAILS, saleSaved._id)
+    const html = saleRegisterMail(process.env.URL_WATCH_PURCHASE_DETAILS, saleSaved._id.toString())
 
     try {
         await sendMail(data.email, subject, text, html)
@@ -121,7 +121,7 @@ export async function saleRegister(data: saleRegisterType): Promise<object> {
 
     return {
         message: 'Sale added successfully',
-        results: JSON.stringify(saleSaved._id)
+        saleId: saleSaved._id.toString()
     }
 }
 
@@ -131,6 +131,10 @@ export async function salesCancel(data: saleCancelType): Promise<object> {
     const user = data._user
     const saleId = data.id
     const sale = await SaleModel.findById(saleId)
+
+    if (!sale) {
+        throw new Error('The sale does not exist')
+    }
 
     if (sale.user.toString() !== JSON.stringify(user._id)) {
         if (user.role !== userEnum.roles.admin) {
@@ -152,7 +156,22 @@ export async function getById(data: saleGetByIdType): Promise<object> {
         throw new Error('The sale does not exist')
     }
 
-    console.log(sale)
+    console.log(data)
+
+    if (sale.user.toString()) {
+        if (data.token) {
+            const decodedToken = jwt.verify(data.token, config.SECRET)
+            const user = await User.findById(decodedToken.sub).lean()
+
+            if (!user) throw new Error('The token is invalid')
+
+            if (sale.user.toString() !== user._id.toString()) {
+                throw new Error('You are not the owner of this purchase')
+            }
+        } else {
+            throw new Error('You are not logged in!!')
+        }
+    }
 
     return {
         sale,
@@ -165,11 +184,15 @@ export async function salesSendPayment(data: saleChangePaymentStatusType): Promi
     const saleId = data.sale.id
     const sale = await SaleModel.findById(saleId)
 
+    if (!sale) {
+        throw new Error('The sale does not exist')
+    }
+
     if ((user.role === userEnum.roles.user) && (sale.status !== saleEnum.status.pendingPayment)) {
         throw new Error('This function is avaliable just for admin users')
     }
 
-    const saleSaved = await SaleModel.findByIdAndUpdate(saleId, { status: saleEnum.status.pendingConfirmation })
+    const saleSaved = await SaleModel.findByIdAndUpdate(saleId, { status: saleEnum.status.pendingPayment })
 
     return {
         sale: saleSaved
@@ -184,7 +207,7 @@ export async function salesConfirmPayment(data: saleChangePaymentStatusType): Pr
         throw new Error('This function is avaliable just for admin users')
     }
 
-    const saleSaved = await SaleModel.findByIdAndUpdate(saleId, { status: saleEnum.status.confirmed })
+    const saleSaved = await SaleModel.findByIdAndUpdate(saleId, { status: saleEnum.status.pendingConfirmation })
 
     return {
         sale: saleSaved
@@ -199,7 +222,7 @@ export async function salesConfirmSentPackage(data: saleChangePaymentStatusType)
         throw new Error('This function is avaliable just for admin users')
     }
 
-    const saleSaved = await SaleModel.findByIdAndUpdate(saleId, { status: saleEnum.status.sent })
+    const saleSaved = await SaleModel.findByIdAndUpdate(saleId, { status: saleEnum.status.preparing })
 
     return {
         sale: saleSaved

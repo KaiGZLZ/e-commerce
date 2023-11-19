@@ -6,7 +6,7 @@ type alertStatus =  'error' | 'info' | 'warning' | 'success' | 'loading' | undef
 interface alert {
   status: alertStatus
   title: string,
-  message: string,
+  message: string | undefined,
 }
 
 const initialState: alert = {
@@ -22,7 +22,7 @@ export const alertSlice = createSlice({
     setAlert: (state, action: PayloadAction<alert>) => {
       state.status = action.payload.status
       state.title = action.payload.title
-      state.message = action.payload.message
+      state.message = action.payload.message || ''
     },
     clearAlert: (state) => {
       state.status = undefined

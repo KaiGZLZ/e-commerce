@@ -1,11 +1,36 @@
 import mongoose from 'mongoose'
 import salesEnum from '../__helpers/enums/sales.enum'
-
 const { Schema } = mongoose
 
-const productSchema: any = new Schema(
+interface productSchemaType {
+    product: mongoose.Types.ObjectId
+
+    // Product data at the moment of the sale
+    name: string
+    description: string
+    price: number
+    wholesalePrice: number
+    category: string
+    orderMinForWholesale: number
+    images: string[]
+
+    quantity: number
+    total: number
+}
+
+interface salesSchemaType {
+    user: mongoose.Types.ObjectId
+    email: string
+    products: productSchemaType[]
+    total: number
+    totalQuantity: number
+    status: number
+    paymentMethod: string
+}
+
+const productSchema: any = new Schema<productSchemaType>(
     {
-        product: { type: 'ObjectId', ref: 'Product', required: true },
+        product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
 
         // Product data at the moment of the sale
         name: { type: String, required: true },
@@ -22,13 +47,20 @@ const productSchema: any = new Schema(
     }, { _id: false }
 )
 
-const salesSchema: any = new Schema(
+const salesSchema = new Schema<salesSchemaType>(
     {
-        user: { type: 'ObjectId', ref: 'User' },
+        user: { type: Schema.Types.ObjectId, ref: 'User' },
         email: { type: String, required: true },
         products: [productSchema],
         total: { type: Number, required: true },
-        status: { type: Number, default: salesEnum.status.pendingPayment }
+        totalQuantity: { type: Number, required: true },
+        status: { type: Number, default: salesEnum.status.pendingPayment },
+        paymentMethod: {
+            type: String,
+            required: function(this: salesSchemaType) {
+                return this.status !== salesEnum.status.pendingPayment
+            }
+        }
     },
     {
         toJSON: {
@@ -41,4 +73,4 @@ const salesSchema: any = new Schema(
     }
 )
 
-export = mongoose.model('Sale', salesSchema)
+export = mongoose.model<salesSchemaType>('Sale', salesSchema)

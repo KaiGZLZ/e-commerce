@@ -7,8 +7,10 @@ type registerSaleType = {
   totalQuantity: number;
   email: string | null;
 };
+
 type registerSaleTypeSuccess = {
-  sale: string;
+  message: string;
+  saleId: string
 };
 
 
@@ -42,14 +44,6 @@ export const saleService = api.injectEndpoints({
       query: (data) => ({
         url: 'sales/get-by-id/'+data,
         method: 'GET',
-        // This is the same as passing 'text'
-        responseHandler: (response) => {
-          if (!response.ok) {
-            // Probably return some error object here
-            return response.text()
-          }
-          return response.json()
-        },
       }),
       transformResponse: (response: { data: getSaleType }) => response.data,
       keepUnusedDataFor: 60,

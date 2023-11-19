@@ -35,6 +35,11 @@ export default async function errorHandler(err: any, _req: Request, res: Respons
             return res.status(409).send('Duplicate field value entered. The ' + key + ' ' + err.keyValue[key] + ' already exists')
         }
     }
+
+    if (err.name === 'ConflictError') {
+        return res.status(409).send(err.message)
+    }
+
     // default 500 server error
     return res.status(500).send(err.message)
 }

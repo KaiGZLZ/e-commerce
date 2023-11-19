@@ -25,6 +25,7 @@ import { parseLocarstorageUser } from './__helpers/isUser'
 import ProductRegisterPage from './views/products/ProductRegisterPage'
 import userEnum from './enums/user.enum'
 import RegisterCategorie from './views/categories/RegisterCategorie'
+import SalePage from './views/sales/SalePage'
 
 function App() {
 
@@ -63,6 +64,8 @@ function App() {
             <Route path="/products/category/:categorie" element={<Categorie />} />
             <Route element={<PrivateRoute allowedRoles={[userEnum.role.admin]} />} ><Route path="/products/register" element={<ProductRegisterPage />} /></Route>
 
+
+            <Route path="/sales/sale/:saleId" element={<SalePage />} />
           </Switch>
         </Router>
       </div>
