@@ -46,4 +46,10 @@ declare interface Sale {
   updatedAt: string
 }
 
+declare interface CustomError {
+  name: string
+  message: string
+  data: object | null
+}
+
 

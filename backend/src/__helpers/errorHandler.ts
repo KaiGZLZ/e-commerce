@@ -41,5 +41,9 @@ export default async function errorHandler(err: any, _req: Request, res: Respons
     }
 
     // default 500 server error
-    return res.status(500).send(err.message)
+    return res.status(500).send({
+        message: err.message,
+        name: err.name,
+        data: {}
+    })
 }

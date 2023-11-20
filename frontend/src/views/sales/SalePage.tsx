@@ -23,12 +23,7 @@ function SalePage() {
 
   React.useEffect(() => {
     if (isError) {
-      if ('status' in error ){
-        dispatch(alertSlice.actions.setAlert({ status: 'error', title:'Error', message: JSON.stringify(error.data) }))
-      }
-      else{
-        dispatch(alertSlice.actions.setAlert({ status: 'error', title:'Error', message: JSON.stringify(error) }))
-      }
+      dispatch(alertSlice.actions.setAlert(error))
     }
   }, [isError])
 
@@ -43,7 +38,7 @@ function SalePage() {
 
         <Text  textAlign={'center'} fontSize={'25px'} fontWeight={'bold'}>Sale items</Text>
 
-        <Button onClick={onOpen} isDisabled={isFetching} isLoading={isFetching} loadingText='Loading' size={'sm'} bg={'green.600'} color={'white'} position={['static','static','absolute','absolute']} right={'30px'}>
+        <Button onClick={onOpen} isLoading={isFetching} loadingText='Loading' size={'sm'} bg={'green.600'} color={'white'} position={['static','static','absolute','absolute']} right={'30px'}>
           Check status
         </Button>
       </Flex>
