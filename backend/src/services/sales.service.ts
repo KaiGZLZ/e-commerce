@@ -4,7 +4,7 @@ import ProductModel from '../Models/product.model'
 import * as jwt from 'jsonwebtoken'
 import sendMail from '../__helpers/sendEmail'
 import { saleRegisterMail } from '../mailTemplates/sales.mails'
-import { type saleRegisterType, type saleGetByIdType, type saleChangePaymentStatusType, type saleCancelType } from './_servicesTypes/saleService.types'
+import { type saleRegisterType, type saleGetByIdType, type salePaymentConfirmationType, type salePaymentRejectionType, type saleSentPackageType, type salePackageReceivedType } from './_servicesTypes/saleService.types'
 import userEnum from '../__helpers/enums/user.enum'
 import saleEnum from '../__helpers/enums/sales.enum'
 import config from '../config'
@@ -125,38 +125,12 @@ export async function saleRegister(data: saleRegisterType): Promise<object> {
     }
 }
 
-export async function salesCancel(data: saleCancelType): Promise<object> {
-    // It is confirmed that the user is the owner of the sale or otherwise the user is an admin
-
-    const user = data._user
-    const saleId = data.id
-    const sale = await SaleModel.findById(saleId)
-
-    if (!sale) {
-        throw new Error('The sale does not exist')
-    }
-
-    if (sale.user.toString() !== JSON.stringify(user._id)) {
-        if (user.role !== userEnum.roles.admin) {
-            throw new Error('You are not the owner of this purchase')
-        }
-    }
-
-    const saleSaved = await SaleModel.findByIdAndUpdate(saleId, { status: saleEnum.status.canceled })
-
-    return {
-        sale: saleSaved
-    }
-}
-
 export async function getById(data: saleGetByIdType): Promise<object> {
     const sale = await SaleModel.findOne({ _id: data.id }).populate('products.product').lean()
 
     if (!sale) {
         throw new Error('The sale does not exist')
     }
-
-    console.log(data)
 
     if (sale.user.toString()) {
         if (data.token) {
@@ -165,8 +139,10 @@ export async function getById(data: saleGetByIdType): Promise<object> {
 
             if (!user) throw new Error('The token is invalid')
 
-            if (sale.user.toString() !== user._id.toString()) {
-                throw new Error('You are not the owner of this purchase')
+            if (user.role !== userEnum.roles.admin) {
+                if (sale.user.toString() !== user._id.toString()) {
+                    throw new Error('You are not the owner of this purchase')
+                }
             }
         } else {
             throw new Error('You are not logged in!!')
@@ -179,67 +155,174 @@ export async function getById(data: saleGetByIdType): Promise<object> {
     }
 }
 
-export async function salesSendPayment(data: saleChangePaymentStatusType): Promise<object> {
+export async function userPaymentConfirmation(data: salePaymentConfirmationType): Promise<object> {
     const user = data._user
-    const saleId = data.sale.id
+    const saleId = data.saleId
+
     const sale = await SaleModel.findById(saleId)
 
     if (!sale) {
         throw new Error('The sale does not exist')
     }
 
-    if ((user.role === userEnum.roles.user) && (sale.status !== saleEnum.status.pendingPayment)) {
-        throw new Error('This function is avaliable just for admin users')
+    if (sale.user.toString() !== user._id.toString()) {
+        throw new Error('You are not the owner of this purchase')
     }
 
-    const saleSaved = await SaleModel.findByIdAndUpdate(saleId, { status: saleEnum.status.pendingPayment })
+    if (sale.status > saleEnum.status.pendingConfirmation && sale.status !== saleEnum.status.canceled) {
+        throw new Error('This purchase is not pending payment')
+    }
+
+    const newData = {
+        paymentMethod: data.paymentMethod,
+        paymentReference: data.paymentReference,
+        paymentDate: new Date(data.paymentDate),
+        rejectionReason: '',
+        status: saleEnum.status.pendingConfirmation
+    }
+
+    Object.assign(sale, newData)
+
+    const saleSaved = await sale.save()
 
     return {
         sale: saleSaved
     }
 }
 
-export async function salesConfirmPayment(data: saleChangePaymentStatusType): Promise<object> {
+export async function adminPaymentConfirmation(data: salePaymentConfirmationType): Promise<object> {
     const user = data._user
-    const saleId = data.sale.id
 
-    if ((user.role !== userEnum.roles.admin)) {
+    if (user.role !== userEnum.roles.admin) {
         throw new Error('This function is avaliable just for admin users')
     }
 
-    const saleSaved = await SaleModel.findByIdAndUpdate(saleId, { status: saleEnum.status.pendingConfirmation })
+    const saleId = data.saleId
+
+    const sale = await SaleModel.findById(saleId)
+
+    if (!sale) {
+        throw new Error('The sale does not exist')
+    }
+
+    if (sale.status > saleEnum.status.pendingConfirmation && sale.status !== saleEnum.status.canceled) {
+        throw new Error('This purchase is not pending confirmation')
+    }
+
+    const newData = {
+        paymentMethod: data.paymentMethod,
+        paymentReference: data.paymentReference,
+        paymentDate: new Date(data.paymentDate),
+        rejectionReason: '',
+        status: saleEnum.status.preparing
+    }
+
+    Object.assign(sale, newData)
+
+    const saleSaved = await sale.save()
 
     return {
+        message: 'Payment confirmed successfully',
         sale: saleSaved
     }
 }
 
-export async function salesConfirmSentPackage(data: saleChangePaymentStatusType): Promise<object> {
+export async function adminPaymentRejection(data: salePaymentRejectionType): Promise<object> {
     const user = data._user
-    const saleId = data.sale.id
 
-    if ((user.role !== userEnum.roles.admin)) {
+    if (user.role !== userEnum.roles.admin) {
         throw new Error('This function is avaliable just for admin users')
     }
 
-    const saleSaved = await SaleModel.findByIdAndUpdate(saleId, { status: saleEnum.status.preparing })
+    const sale = await SaleModel.findById(data.saleId)
+
+    if (!sale) {
+        throw new Error('The sale does not exist')
+    }
+
+    if (sale.status !== saleEnum.status.pendingConfirmation) {
+        throw new Error('This purchase is not pending confirmation')
+    }
+
+    const newData = {
+        paymentMethod: '',
+        paymentReference: '',
+        paymentDate: '',
+        rejectionReason: data.rejectionReason,
+        status: saleEnum.status.pendingPayment
+    }
+
+    Object.assign(sale, newData)
+
+    const saleSaved = await sale.save()
 
     return {
+        message: 'Payment rejected successfully',
         sale: saleSaved
     }
 }
 
-export async function salesReceivedPackage(data: saleChangePaymentStatusType): Promise<object> {
+export async function sentPackage(data: saleSentPackageType): Promise<object> {
     const user = data._user
-    const saleId = data.sale.id
 
-    if ((user.role !== userEnum.roles.admin)) {
+    if (user.role !== userEnum.roles.admin) {
         throw new Error('This function is avaliable just for admin users')
     }
 
-    const saleSaved = await SaleModel.findByIdAndUpdate(saleId, { status: saleEnum.status.received })
+    const sale = await SaleModel.findById(data.saleId)
+
+    if (!sale) {
+        throw new Error('The sale does not exist')
+    }
+
+    if (sale.status !== saleEnum.status.preparing) {
+        throw new Error('This purchase is not pending confirmation')
+    }
+
+    const newData = {
+        trackingCode: data.trackingCode,
+        status: saleEnum.status.onTheRoad
+    }
+
+    Object.assign(sale, newData)
+
+    const saleSaved = await sale.save()
 
     return {
+        message: 'Package sent successfully',
+        sale: saleSaved
+    }
+}
+
+export async function packageReceived(data: salePackageReceivedType): Promise<object> {
+    const user = data._user
+
+    const sale = await SaleModel.findById(data.saleId)
+
+    if (!sale) {
+        throw new Error('The sale does not exist')
+    }
+
+    if (sale.user.toString() !== user._id.toString()) {
+        throw new Error('You are not the owner of this purchase')
+    }
+
+    if (sale.status !== saleEnum.status.onTheRoad) {
+        throw new Error('This purchase is not pending confirmation')
+    }
+
+    const newData = {
+        rating: data.rating,
+        comment: data.comment,
+        status: saleEnum.status.received
+    }
+
+    Object.assign(sale, newData)
+
+    const saleSaved = await sale.save()
+
+    return {
+        message: 'Package received successfully',
         sale: saleSaved
     }
 }

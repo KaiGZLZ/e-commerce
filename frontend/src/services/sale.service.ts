@@ -13,15 +13,33 @@ type registerSaleTypeSuccess = {
   saleId: string
 };
 
-
-type getTableSaleType = {
-  result: Product[]
-  total: number
-}
-
 type getSaleType = {
   sale: Sale
 }
+
+type paymentConfirmationType = {
+  saleId: string | undefined
+  paymentMethod: string
+  paymentReference: string
+  paymentDate: string
+}
+
+type paymentRejectionType = {
+  saleId: string
+  rejectionReason: string
+}
+
+type sentPackageType = {
+  saleId: string
+  trackingCode: string
+}
+
+type packageReceivedType = {
+  saleId: string
+  rating: number
+  comment: string
+}
+
 
 export const saleService = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -48,46 +66,58 @@ export const saleService = api.injectEndpoints({
       transformResponse: (response: { data: getSaleType }) => response.data,
       keepUnusedDataFor: 60,
     }),
-    getTableSale: builder.query< getTableSaleType, string>({
+    userPaymentConfirmation: builder.mutation<registerSaleTypeSuccess, paymentConfirmationType>({
       query: (data) => ({
-        url: 'sales/table'+data,
-        method: 'GET',
-        // This is the same as passing 'text'
-        responseHandler: (response) => {
-          if (!response.ok) {
-            // Probably return some error object here
-            return response.text()
-          }
-          return response.json()
-        },
-      }),
-      transformResponse: (response: { data: getTableSaleType }) => response.data,
-      keepUnusedDataFor: 60,
-    }),
-    deleteSale: builder.query({
-      query: (data) => ({
-        url: 'sales/delete',
-        method: 'DELETE',
+        url: 'sales/user-payment-confirmation',
+        method: 'POST',
         body: JSON.stringify(data),
-        // This is the same as passing 'text'
-        responseHandler: (response) => {
-          if (!response.ok) {
-            // Probably return some error object here
-            return response.text()
-          }
-          return response.json()
-        },
       }),
+      transformResponse: (response: { data: registerSaleTypeSuccess }) => response.data,
     }),
+    adminPaymentConfirmation: builder.mutation<registerSaleTypeSuccess, paymentConfirmationType>({
+      query: (data) => ({
+        url: 'sales/admin-payment-confirmation',
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+      transformResponse: (response: { data: registerSaleTypeSuccess }) => response.data,
+    }),
+    adminPaymentRejection: builder.mutation<registerSaleTypeSuccess, paymentRejectionType>({
+      query: (data) => ({
+        url: 'sales/admin-payment-rejection',
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+      transformResponse: (response: { data: registerSaleTypeSuccess }) => response.data,
+    }),
+    sentPackage: builder.mutation<registerSaleTypeSuccess, sentPackageType>({
+      query: (data) => ({
+        url: 'sales/sent-package',
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+      transformResponse: (response: { data: registerSaleTypeSuccess }) => response.data,
+    }),
+    packageReceived: builder.mutation<registerSaleTypeSuccess, packageReceivedType>({
+      query: (data) => ({
+        url: 'sales/package-received',
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+      transformResponse: (response: { data: registerSaleTypeSuccess }) => response.data,
+    }),
+
+
   }),
 })
 
 export const {
   useRegisterSaleMutation,
-  useGetTableSaleQuery,
-  useLazyGetTableSaleQuery,
+  useUserPaymentConfirmationMutation,
+  useAdminPaymentConfirmationMutation,
+  useAdminPaymentRejectionMutation,
+  useSentPackageMutation,
+  usePackageReceivedMutation,
   useGetSaleByIdQuery,
   useLazyGetSaleByIdQuery,
-  useDeleteSaleQuery,
-  useLazyDeleteSaleQuery,
 } = saleService

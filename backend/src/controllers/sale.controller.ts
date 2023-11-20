@@ -8,10 +8,11 @@ const router = express.Router()
 // routes
 router.post('/register', saleRegisterValidation, saleRegister)
 router.get('/get-by-id/:id', getById)
-/* router.delete('/delete', saleDeleteValidation, saleDelete)
- router.patch('/update', saleUpdateValidation, saleUpdate)
-router.get('/sale/:id', saleGet)
-router.get('/table', saleTable) */
+router.post('/user-payment-confirmation', userPaymentConfirmation)
+router.post('/admin-payment-confirmation', adminPaymentConfirmation)
+router.post('/admin-payment-rejection', adminPaymentRejection)
+router.post('/sent-package', sentPackage)
+router.post('/package-received', packageReceived)
 
 module.exports = router
 
@@ -40,23 +41,37 @@ function getById(req: Request, res: Response, next: NextFunction): void {
         .catch(err => { next(err) })
 }
 
-// Delete an sale
-/* function saleDelete(req: Request, res: Response, next: NextFunction): void {
-    saleService.saleDelete(req.body)
+// User payment confirmation
+function userPaymentConfirmation(req: Request, res: Response, next: NextFunction): void {
+    saleService.userPaymentConfirmation(req.body)
         .then(data => res.json({ data }))
         .catch(err => { next(err) })
 }
 
-// Delete an sale
-function saleUpdate(req: Request, res: Response, next: NextFunction): void {
-    saleService.saleUpdate(req.body)
+// Admin payment confirmation
+function adminPaymentConfirmation(req: Request, res: Response, next: NextFunction): void {
+    saleService.adminPaymentConfirmation(req.body)
         .then(data => res.json({ data }))
         .catch(err => { next(err) })
 }
 
-// Get a sale
-function saleTable(req: Request, res: Response, next: NextFunction): void {
-    saleService.saleTable(req.query)
+// Admin payment rejection
+function adminPaymentRejection(req: Request, res: Response, next: NextFunction): void {
+    saleService.adminPaymentRejection(req.body)
         .then(data => res.json({ data }))
-        .catch(err => { console.log(err); next(err) })
-} */
+        .catch(err => { next(err) })
+}
+
+// Sent package
+function sentPackage(req: Request, res: Response, next: NextFunction): void {
+    saleService.sentPackage(req.body)
+        .then(data => res.json({ data }))
+        .catch(err => { next(err) })
+}
+
+// Package received
+function packageReceived(req: Request, res: Response, next: NextFunction): void {
+    saleService.packageReceived(req.body)
+        .then(data => res.json({ data }))
+        .catch(err => { next(err) })
+}

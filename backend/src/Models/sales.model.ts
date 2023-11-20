@@ -25,7 +25,13 @@ interface salesSchemaType {
     total: number
     totalQuantity: number
     status: number
-    paymentMethod: string
+    paymentMethod: number | undefined
+    paymentReference: string | undefined
+    paymentDate: Date | undefined
+    rejectionReason: string | undefined
+    trackingCode: string | undefined
+    rating: number | undefined
+    comment: string | undefined
 }
 
 const productSchema: any = new Schema<productSchemaType>(
@@ -56,11 +62,28 @@ const salesSchema = new Schema<salesSchemaType>(
         totalQuantity: { type: Number, required: true },
         status: { type: Number, default: salesEnum.status.pendingPayment },
         paymentMethod: {
-            type: String,
+            type: Number,
             required: function(this: salesSchemaType) {
                 return this.status !== salesEnum.status.pendingPayment
             }
-        }
+        },
+        paymentReference: {
+            type: String,
+            unique: true,
+            required: function(this: salesSchemaType) {
+                return this.status !== salesEnum.status.pendingPayment
+            }
+        },
+        paymentDate: {
+            type: Date,
+            required: function(this: salesSchemaType) {
+                return this.status !== salesEnum.status.pendingPayment
+            }
+        },
+        rejectionReason: { type: String },
+        trackingCode: { type: String },
+        rating: { type: Number },
+        comment: { type: String }
     },
     {
         toJSON: {

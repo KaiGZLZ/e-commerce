@@ -42,6 +42,13 @@ declare interface Sale {
   total: number
   totalQuantity: number
   status: number
+  paymentMethod: number | undefined
+  paymentReference: string | undefined
+  paymentDate: string | undefined
+  rejectionReason: string | undefined
+  trackingCode: string | undefined
+  rating: number | undefined
+  comment: string | undefined
   createdAt: string
   updatedAt: string
 }
