@@ -2,7 +2,6 @@ import Product from '../Models/product.model'
 
 import { type productDeleteType, type productRegisterType, type productUpdateType } from './_servicesTypes/productService.types'
 import userEnum from '../__helpers/enums/user.enum'
-import moment from 'moment'
 import { NotFoundError, UnauthorizedError } from '../__helpers/customErrors'
 
 /**  Funtion to register a product
@@ -111,24 +110,27 @@ export async function productDelete(data: productDeleteType): Promise<object> {
  * @param {string} data.product.stock - products stock
  *
  */
-export async function productUpdate(data: productUpdateType): Promise<void> {
+export async function productUpdate(data: productUpdateType): Promise<object> {
     const user = data._user
-    const product = data.product
 
     if (user.role !== userEnum.roles.admin) {
         throw new Error('Just the admin users are allowed to register products')
     }
 
-    const oldProduct = await Product.findById(product.id)
+    const oldProduct = await Product.findById(data.productId)
 
     if (!oldProduct) {
         throw new Error('The product is not valid')
     }
 
-    product.updatedDate = moment().subtract(4, 'hours').toDate()
-    Object.assign(oldProduct, product)
+    Object.assign(oldProduct, data)
 
-    await oldProduct.save()
+    const productSaved = await oldProduct.save()
+
+    return {
+        message: 'The product was successfully updated',
+        result: productSaved
+    }
 }
 
 /**  Funtion to get a product

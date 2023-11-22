@@ -26,6 +26,9 @@ import ProductRegisterPage from './views/products/ProductRegisterPage'
 import userEnum from './enums/user.enum'
 import RegisterCategorie from './views/categories/RegisterCategorie'
 import SalePage from './views/sales/SalePage'
+import ProductEditPage from './views/products/ProductEditPage'
+import SearchUser from './views/user/SearchUser'
+import UserEdit from './views/user/UserEdit'
 
 function App() {
 
@@ -56,6 +59,8 @@ function App() {
             <Route path="/authenticate" element={<AuthenticationPage />} />
             <Route path='/login' element={<Login />} />
             <Route path='/forgotten-password' element={<ForgottenPassword />} />
+            <Route element={<PrivateRoute allowedRoles={[userEnum.role.admin]} />} ><Route path="/users/search" element={<SearchUser />} /></Route>
+            <Route element={<PrivateRoute allowedRoles={[userEnum.role.admin, userEnum.role.user]} />} ><Route path="/users/update" element={<UserEdit />} /></Route>
             {/* <Route path='/change-password' element={<ForgottenPassword />} /> */}
 
 
@@ -63,6 +68,7 @@ function App() {
             <Route path="/products/product/:productId" element={<ProductPage />} />
             <Route path="/products/category/:categorie" element={<Categorie />} />
             <Route element={<PrivateRoute allowedRoles={[userEnum.role.admin]} />} ><Route path="/products/register" element={<ProductRegisterPage />} /></Route>
+            <Route element={<PrivateRoute allowedRoles={[userEnum.role.admin]} />} ><Route path="/products/edit/:productId" element={<ProductEditPage />} /></Route>
 
 
             <Route path="/sales/sale/:saleId" element={<SalePage />} />

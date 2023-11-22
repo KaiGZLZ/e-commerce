@@ -6,7 +6,8 @@ import User from '../Models/user.model'
 
 import sendMail from '../__helpers/sendEmail'
 import { activateAccountMail } from '../mailTemplates/user.mails'
-import { type sendRecoveryEmailType, type userAuthenticateType, type userChangePasswordType, type userDeleteType, type userLoginType, type userRegisterType } from './_servicesTypes/userService.types'
+import { type userUpdateType, type getUserByUsernameType, type sendRecoveryEmailType, type userAuthenticateType, type userChangePasswordType, type userDeleteType, type userLoginType, type userRegisterType } from './_servicesTypes/userService.types'
+import userEnum from '../__helpers/enums/user.enum'
 
 /** Funtion to register an user
  *
@@ -55,6 +56,51 @@ export async function userRegister(data: userRegisterType): Promise<object> {
 
     return {
         message: 'User added successfully'
+    }
+}
+
+export async function getUserByUsername(data: getUserByUsernameType): Promise<object> {
+    const user = data._user
+
+    if (user.role === userEnum.roles.user) {
+        if (user.username === data.username) {
+            return {
+                result: user,
+                message: 'User searched successfully'
+
+            }
+        } else {
+            throw new Error('You do not have permission to perform this action')
+        }
+    } else {
+        const userToSend = await User.findOne({ username: data.username }).lean()
+        return {
+            result: userToSend,
+            message: 'User searched successfully'
+        }
+    }
+}
+
+export async function userUpdate(data: userUpdateType): Promise<object> {
+    const user = data._user
+
+    const existingUser = await User.findById(data.userId)
+
+    if (!existingUser) throw new Error('The user does not exist')
+
+    // Just the admin can change the role
+    if (user.role === userEnum.roles.admin) {
+        Object.assign(existingUser, data)
+    } else if (user.role === userEnum.roles.user) {
+        delete data.role
+        Object.assign(existingUser, data)
+    }
+
+    const existingUserSaved = await existingUser.save()
+
+    return {
+        message: 'User updated successfully',
+        result: existingUserSaved
     }
 }
 
@@ -177,8 +223,7 @@ export async function sendRecoveryEmail(data: sendRecoveryEmailType): Promise<vo
     await sendMail(user.email, subject, text, html)
 }
 
-/**
- * Funtion to change the user password
+/** Funtion to change the user password
  *
  * @param {object} data -
  * @param {string} data.token - Users username

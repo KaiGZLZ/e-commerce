@@ -35,19 +35,6 @@ export interface productDeleteType {
     }
 }
 
-export interface productUpdateType {
-    _user: _user
-    product: {
-        id: ObjectId | string
-        name: string
-        price: number
-        description: string
-        category: string
-        subCategory: string
-        tags: string[]
-        wholesalePrice: number | undefined
-        orderMinForWholesale: number | undefined
-        stock: number
-        updatedDate: Date | undefined
-    }
+export interface productUpdateType extends productRegisterType {
+    productId: ObjectId | string
 }

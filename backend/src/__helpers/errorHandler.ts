@@ -10,13 +10,23 @@ export default async function errorHandler(err: any, _req: Request, res: Respons
     if (err.name === 'ValidationError') {
         // mongoose validation error
         console.log('ValidationError')
-        return res.status(400).send(err.message)
+        return res.status(400).send({
+            message: err.message,
+            name: err.name,
+            status: 400,
+            data: {}
+        })
     }
 
     if (err.name === 'UnauthorizedError') {
         // jwt error de autentication
         // Invalid Token
-        return res.status(401).send(err.message)
+        return res.status(401).send({
+            message: err.message,
+            name: err.name,
+            status: 401,
+            data: {}
+        })
     }
 
     if (err.name === 'CastError') {
@@ -44,6 +54,7 @@ export default async function errorHandler(err: any, _req: Request, res: Respons
     return res.status(500).send({
         message: err.message,
         name: err.name,
+        status: 500,
         data: {}
     })
 }

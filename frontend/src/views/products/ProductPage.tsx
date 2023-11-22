@@ -1,17 +1,22 @@
 import React from 'react'
-import { Image, Text, Flex, Tabs, TabList, Tab, TabPanels, TabPanel } from '@chakra-ui/react'
+import { Image, Text, Flex, Tabs, TabList, Tab, TabPanels, TabPanel, Button } from '@chakra-ui/react'
 import Navbar from '../../components/Navbar'
 import { AtSignIcon, ChevronRightIcon } from '@chakra-ui/icons'
 import { useDispatch } from 'react-redux'
 import { addCartItem } from '../../redux/slices/cartSlice'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import CartFloatButton from '../../components/CartFloatButton'
 import { useGetProductQuery } from '../../services/product.service'
+import { parseLocarstorageUser } from '../../__helpers/isUser'
+import userEnum from '../../enums/user.enum'
 
 
 function ProductPage() {
   const dispatch = useDispatch()
   const location = useLocation()
+  const navigate = useNavigate()
+
+  const user = parseLocarstorageUser()
 
   const { data } = useGetProductQuery(location.pathname.split('/')[3])
 
@@ -52,35 +57,48 @@ function ProductPage() {
         <Text fontSize={'40px'} fontWeight={'bold'} textAlign={'center'}>{product?.name}</Text>
         <Text fontSize={'20px'} fontWeight={'bold'} color={'#fcb941'}>Price: ${product?.price}</Text>
         {product?.stock ? <Text fontSize={'20px'} fontWeight={'bold'}>Stock: {product?.stock}</Text> : <Text fontSize={'20px'} fontWeight={'bold'} color={'red'}>Out of stock</Text>}
-        <Flex
-          width={'100%'}
-          justifyContent={'center'}
-          alignItems={'center'}
-          padding={'20px'}
-        >
-          {/* Add to cart icon */}
-          <Flex
-            alignItems={'center'}
-            justifyContent={'center'}
-            border={'2px solid #fcb941'}
-            color={'#fcb941'}
-            fontSize={'20px'}
-            fontWeight={'bold'}
-            padding={'5px 10px'}
-            onClick={() => {
-              dispatch(addCartItem(product))
-            }}
-            _hover={{
-              backgroundColor: '#fcb941',
-              color: 'white',
-              cursor: 'pointer',
-              transition: 'all 0.4s'
-            }}
+
+
+        {/* Edit product button (only admin) */}
+        { (user && user.role === userEnum.role.admin) ? <>
+          <Button colorScheme="teal" variant="outline" marginY={'10px'}
+            onClick={() => navigate('/products/edit/' + product?._id)}
           >
+            Edit product
+          </Button>
+        </> : <>
+          {/* Add to cart button (only users)*/}
+          <Flex
+            width={'100%'}
+            justifyContent={'center'}
+            alignItems={'center'}
+            padding={'20px'}
+          >
+            {/* Add to cart icon */}
+            <Flex
+              alignItems={'center'}
+              justifyContent={'center'}
+              border={'2px solid #fcb941'}
+              color={'#fcb941'}
+              fontSize={'20px'}
+              fontWeight={'bold'}
+              padding={'5px 10px'}
+              onClick={() => {
+                dispatch(addCartItem(product))
+              }}
+              _hover={{
+                backgroundColor: '#fcb941',
+                color: 'white',
+                cursor: 'pointer',
+                transition: 'all 0.4s'
+              }}
+            >
             Add to cart
-            <AtSignIcon margin={'0 10px'} />
+              <AtSignIcon margin={'0 10px'} />
+            </Flex>
           </Flex>
-        </Flex>
+        </>}
+
         { (product?.orderMinForWholesale && product?.wholesalePrice && product?.price) && <>
           <Text fontSize={'15px'} fontWeight={'bold'}>If you buy {product?.orderMinForWholesale} units or more, you will get a discount! of {((1-product?.wholesalePrice/product?.price) * 100).toFixed(2)}% </Text>
         </>

@@ -39,8 +39,6 @@ const userSchema = new Schema<userSchemaType>(
         toJSON: {
             virtuals: true,
             transform: function(_doc: any, ret: any) {
-                delete ret._id
-                delete ret.id
                 delete ret.password
                 delete ret.activationToken
                 delete ret.recoverPasswordToken

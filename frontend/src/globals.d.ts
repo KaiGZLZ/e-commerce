@@ -13,7 +13,8 @@ declare interface Product {
     stock: number
   }
 
-declare interface user {
+declare interface User {
+  _id: string
   username: string
   firstname: string
   lastname: string
@@ -37,7 +38,7 @@ declare interface user {
 declare interface Sale {
   _id: string
   products: SaleProduct[]
-  user: user | undefined
+  user: User | undefined
   email: string
   total: number
   totalQuantity: number

@@ -7,6 +7,8 @@ const router = express.Router()
 
 // routes
 router.post('/register', userRegisterValidation, userRegister)
+router.get('/get-user-by-username/:username', getUserByUsername)
+router.patch('/update', userUpdate)
 router.delete('/delete', userDeleteValidation, userDelete)
 router.post('/login', userLoginValidation, userLogin)
 router.post('/authenticate', userAuthenticateValidation, userAuthenticate)
@@ -19,6 +21,24 @@ module.exports = router
 function userRegister(req: Request, res: Response, next: NextFunction): void {
     userService.userRegister(req.body)
         .then(data => res.status(201).json(data))
+        .catch(err => { next(err) })
+}
+
+// Get an user by username
+function getUserByUsername(req: Request, res: Response, next: NextFunction): void {
+    const params = {
+        username: req.params.username
+    }
+
+    userService.getUserByUsername({ ...req.body, ...params })
+        .then(data => res.json(data))
+        .catch(err => { next(err) })
+}
+
+// Update an user
+function userUpdate(req: Request, res: Response, next: NextFunction): void {
+    userService.userUpdate(req.body)
+        .then(data => res.json(data))
         .catch(err => { next(err) })
 }
 

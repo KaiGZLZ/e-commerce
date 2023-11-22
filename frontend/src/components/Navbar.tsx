@@ -6,6 +6,7 @@ import { parseLocarstorageUser } from '../__helpers/isUser'
 import { userSlice } from '../redux/slices/userSlice'
 import { useDispatch } from 'react-redux'
 import { useGetAllCategoriesQuery } from '../services/category.service'
+import userEnum from '../enums/user.enum'
 
 function Navbar() {
   const location = useLocation()
@@ -110,14 +111,22 @@ function Navbar() {
                   </Link>
                   <Link to={'/categories/register'}>
                     <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
-                    Register a categorie
+                    Register a category
                     </Flex>
                   </Link>
-                  <Link to={'/categories/categorie_2'}>
-                    <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
-                    Contact3
-                    </Flex>
-                  </Link>
+                  { (user.role === userEnum.role.admin) ? <>
+                    <Link to={'/users/search'}>
+                      <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
+                      Search user
+                      </Flex>
+                    </Link>
+                  </> : <>
+                    <Link to={'/users/update'} state={user.username}>
+                      <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
+                        Update information
+                      </Flex>
+                    </Link>
+                  </>}
                   <Link to={'/categories/categorie_4'}>
                     <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
                     Contact4

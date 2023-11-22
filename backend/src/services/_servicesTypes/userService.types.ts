@@ -23,6 +23,17 @@ export interface userRegisterType {
     activationToken: string
 }
 
+export interface getUserByUsernameType {
+    _user: _user
+    username: string
+}
+
+export interface userUpdateType extends userRegisterType {
+    _user: _user
+    userId: string
+    role: number | undefined
+}
+
 export interface userDeleteType {
     _user: _user
     password: string

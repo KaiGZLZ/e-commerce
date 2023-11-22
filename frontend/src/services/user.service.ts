@@ -1,5 +1,29 @@
 import { api } from './servicesConfig/api.service'
 
+
+/*type RegisterDataType = {
+  username: string
+  firstname: string
+  lastname: string
+  password: string
+  passwordConfirmation: string
+  email: string
+}*/
+
+type GetUserType = {
+  result: User
+  message: string
+}
+
+type UpdateDataType ={
+  username: string
+  firstname: string
+  lastname: string
+  email: string
+  role: number | undefined;
+  userId: string
+};
+
 export const userService = api.injectEndpoints({
   endpoints: (builder) => ({
     registerUser: builder.query({
@@ -15,6 +39,19 @@ export const userService = api.injectEndpoints({
           }
           return response.json()
         },
+      }),
+    }),
+    getUserByUsername: builder.query<GetUserType, string>({
+      query: (data) => ({
+        url: 'user/get-user-by-username/'+data,
+        method: 'GET',
+      }),
+    }),
+    updateUser: builder.mutation<GetUserType, UpdateDataType>({
+      query: (data) => ({
+        url: 'user/update',
+        method: 'PATCH',
+        body: JSON.stringify(data),
       }),
     }),
     authenticateUser: builder.query({
@@ -98,6 +135,8 @@ export const userService = api.injectEndpoints({
 export const {
   useRegisterUserQuery,
   useLazyRegisterUserQuery,
+  useUpdateUserMutation,
+  useGetUserByUsernameQuery,
   useAuthenticateUserQuery,
   useLazyAuthenticateUserQuery,
   useDeleteUserQuery,
@@ -112,38 +151,3 @@ export const {
 
 } = userService
 
-
-
-
-
-/*import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { apiUrl } from '../config/config'
-
-
-// Define a service using a base URL and expected endpoints
-export const pokemonApi = createApi({
-    reducerPath: 'pokemonApi',
-    baseQuery: fetchBaseQuery({ baseUrl: apiUrl }),
-    endpoints: (builder) => ({
-        registerUser: builder.query({
-
-            query(user) {
-                return {
-                url: `user/register`,
-                method: 'POST',
-                body: JSON.stringify({user}),
-                }
-
-                method: 'POST',
-                body: JSON.stringify({user}),
-                headers:{
-                'Content-Type': 'application/json'
-                }
-            },
-        }),
-    }),
-})
-
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
-export const { useGetPokemonByNameQuery } = pokemonApi*/

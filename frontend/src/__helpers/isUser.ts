@@ -1,7 +1,8 @@
-export function isUser(user: user | undefined | null): user | null {
+export function isUser(user: User | undefined | null): User | null {
 
-  if (user && user.username && user.firstname && user.lastname && user.email && user.role) {
+  if (user && user._id && user.username && user.firstname && user.lastname && user.email && user.role) {
     return {
+      _id: user._id,
       username: user.username,
       firstname: user.firstname,
       lastname: user.lastname,
@@ -13,7 +14,7 @@ export function isUser(user: user | undefined | null): user | null {
   return null
 }
 
-export function parseLocarstorageUser(): user | null {
+export function parseLocarstorageUser(): User | null {
 
   const user = localStorage.getItem('user')
 
@@ -21,8 +22,9 @@ export function parseLocarstorageUser(): user | null {
 
   try {
     const userParsed = JSON.parse(user)
-    if (userParsed && userParsed.username && userParsed.firstname && userParsed.lastname && userParsed.email && userParsed.role) {
+    if (userParsed && userParsed._id && userParsed.username && userParsed.firstname && userParsed.lastname && userParsed.email && userParsed.role) {
       return {
+        _id: userParsed._id,
         username: userParsed.username,
         firstname: userParsed.firstname,
         lastname: userParsed.lastname,

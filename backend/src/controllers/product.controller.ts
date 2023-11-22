@@ -1,14 +1,14 @@
 import express, { type Request, type Response, type NextFunction } from 'express'
 
 import * as productService from '../services/product.service'
-import { productRegisterValidation, productDeleteValidation, productUpdateValidation } from '../validators/product.validator'
+import { productRegisterValidation, productDeleteValidation } from '../validators/product.validator'
 
 const router = express.Router()
 
 // routes
 router.post('/register', productRegisterValidation, productRegister)
 router.delete('/delete', productDeleteValidation, productDelete)
-router.patch('/update', productUpdateValidation, productUpdate)
+router.patch('/update/:id', productRegisterValidation, productUpdate)
 router.get('/product/:id', productGet)
 router.get('/table', productTable)
 

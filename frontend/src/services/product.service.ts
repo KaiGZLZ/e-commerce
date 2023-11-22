@@ -1,5 +1,16 @@
 import { api } from './servicesConfig/api.service'
 
+type RegisterProductType = {
+    name: string
+    price: number
+    description: string
+    category: string
+    wholesalePrice: number | undefined
+    orderMinForWholesale: number | undefined
+    stock: number | undefined
+  }
+
+
 type getTableProductsType = {
   result: Product[]
   total: number
@@ -7,7 +18,12 @@ type getTableProductsType = {
 
 type getProductType = {
   result: Product
+  message: string
 }
+
+type UpdateProductType = RegisterProductType & {
+  productId: string;
+};
 
 export const productsService = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -28,7 +44,7 @@ export const productsService = api.injectEndpoints({
     }),
     getTableProducts: builder.query< getTableProductsType, string>({
       query: (data) => ({
-        url: 'products/table'+data,
+        url: 'products/table/'+data,
         method: 'GET',
         // This is the same as passing 'text'
         responseHandler: (response) => {
@@ -58,6 +74,14 @@ export const productsService = api.injectEndpoints({
       transformResponse: (response: { data: getProductType }) => response.data,
       keepUnusedDataFor: 60,
     }),
+    updateProducts: builder.mutation<getProductType, UpdateProductType>({
+      query: (data) => ({
+        url: 'products/update/'+data.productId,
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }),
+      transformResponse: (response: { data: getProductType }) => response.data,
+    }),
     deleteProducts: builder.query({
       query: (data) => ({
         url: 'products/delete',
@@ -83,6 +107,7 @@ export const {
   useLazyGetTableProductsQuery,
   useGetProductQuery,
   useLazyGetProductQuery,
+  useUpdateProductsMutation,
   useDeleteProductsQuery,
   useLazyDeleteProductsQuery,
 } = productsService
