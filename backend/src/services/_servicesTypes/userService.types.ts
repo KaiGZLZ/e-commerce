@@ -20,6 +20,7 @@ export interface userRegisterType {
     username: string
     password: string
     email: string
+    role: number | undefined
     activationToken: string
 }
 

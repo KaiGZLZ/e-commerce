@@ -1,6 +1,6 @@
 import React from 'react'
-import { Box, Flex, Spacer, IconButton, useDisclosure, Collapse, Input, InputGroup, InputLeftElement, Center, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody, Button, Spinner } from '@chakra-ui/react'
-import { HamburgerIcon, CloseIcon, SearchIcon, SettingsIcon, WarningTwoIcon, AtSignIcon } from '@chakra-ui/icons'
+import { Box, Flex, Spacer, IconButton, useDisclosure, Collapse, Input, InputGroup, InputLeftElement, Center, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody, Button, Spinner, Icon } from '@chakra-ui/react'
+import { HamburgerIcon, CloseIcon, SearchIcon, SettingsIcon, WarningTwoIcon, AtSignIcon, ChevronDownIcon } from '@chakra-ui/icons'
 import { Link, useLocation } from 'react-router-dom'
 import { parseLocarstorageUser } from '../__helpers/isUser'
 import { userSlice } from '../redux/slices/userSlice'
@@ -211,40 +211,55 @@ function Navbar() {
     {/* Categories popover for big screen  */}
     <Box bg="gray.600" px={10} width={'100%'} maxWidth={'1200px'} display={['none', 'none', 'block', 'block']}>
       <Flex paddingBottom={1} alignItems="center" justifyContent="space-between">
-        <Popover placement='bottom-start' trigger="hover">
-          <PopoverTrigger>
-            <Flex mr={6} color="white" fontWeight={'bold'} px={10} py={2} _hover={{ bg: 'gray.500' }}>
-              Categories
-            </Flex>
-          </PopoverTrigger>
-          <PopoverContent>
-            <PopoverArrow bg={'teal.500'} />
-            <PopoverBody
-              display={'flex'}
-              width={'100%'}
-              px={'10px'}
-              py={'5px'}
-              color='white'
-              bg='teal.500'
-              rounded='md'
-              shadow='md'
-              flexDir={'column'}
-            >
-              {
-                isFetchingCategories ?
-                  <Spinner /> :
-                  categories ? categories.map((categorie) => (
-                    <Link to={`/products/category/${categorie.name}`} key={categorie._id}>
-                      <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
-                        {categorie.name}
-                      </Flex>
-                    </Link>
-                  )) : null
+        <Box
+          position={'relative'}
+          role='group'
+          width={'25%'}
+          zIndex={1}
+        >
+          <Flex
+            color="white"
+            fontWeight={'bold'}
+            px={2}
+            py={2}
+            transition={'0.25s'}
+            _hover={{ bg: 'gray.500' }}
+            role='data-peer'
+            justifyContent={'space-between'}
+            alignItems={'center'}
+          >
+            Categories
+            <Icon as ={ChevronDownIcon} />
+          </Flex>
+          <Box
+            position={'absolute'}
+            border={'1px solid'}
+            width={'100%'}
+            zIndex={1}
+            height={'auto'}
+            maxHeight={'0px'}
+            bg={'teal.500'}
+            visibility={'hidden'}
+            transitionDuration={'0.5s'}
+            transitionTimingFunction={'ease'}
+            transitionProperty={'max-height, visibility'}
+            _hover={{ maxHeight:'1000px', visibility:'visible' }}
+            _groupHover={{ maxHeight:'250px', visibility:'visible' }}
+          >
+            {
+              isFetchingCategories ?
+                <Spinner /> :
+                categories ? categories.map((categorie) => (
+                  <Link to={`/products/category/${categorie.name}`} key={categorie._id}>
+                    <Flex color="white" padding={'1rem'} transition={'0.25s'} _hover={{ bg: 'teal.400' }}>
+                      {categorie.name}
+                    </Flex>
+                  </Link>
+                )) : null
 
-              }
-            </PopoverBody>
-          </PopoverContent>
-        </Popover>
+            }
+          </Box>
+        </Box>
         <Spacer />
         <Link to={'/offers'}>
           <Flex mr={6} color="white" fontWeight={'bold'} px={10} py={2} _hover={{ bg: 'gray.500' }}>

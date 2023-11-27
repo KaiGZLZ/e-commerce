@@ -1,88 +1,46 @@
 import { api } from './servicesConfig/api.service'
-
-type RegisterProductType = {
-    name: string
-    price: number
-    description: string
-    category: string
-    wholesalePrice: number | undefined
-    orderMinForWholesale: number | undefined
-    stock: number | undefined
-  }
-
-
-type getTableProductsType = {
-  result: Product[]
-  total: number
-}
-
-type getProductType = {
-  result: Product
-  message: string
-}
-
-type UpdateProductType = RegisterProductType & {
-  productId: string;
-};
+import { RegisterProductType, RegisterProductTypeSuccess, UpdateProductType, getProductType, getTableProductsType } from './servicesTypes/product.types'
 
 export const productsService = api.injectEndpoints({
   endpoints: (builder) => ({
-    registerProducts: builder.query({
+    registerProducts: builder.mutation<RegisterProductTypeSuccess, RegisterProductType>({
       query: (data) => ({
         url: 'products/register',
         method: 'POST',
         body: JSON.stringify(data),
-        // This is the same as passing 'text'
-        responseHandler: (response) => {
-          if (!response.ok) {
-            // Probably return some error object here
-            return response.text()
-          }
-          return response.json()
-        },
       }),
+      invalidatesTags: [{ type: 'PRODUCTS', id: 'products/table' }],
     }),
+
     getTableProducts: builder.query< getTableProductsType, string>({
       query: (data) => ({
         url: 'products/table/'+data,
         method: 'GET',
-        // This is the same as passing 'text'
-        responseHandler: (response) => {
-          if (!response.ok) {
-            // Probably return some error object here
-            return response.text()
-          }
-          return response.json()
-        },
       }),
+      providesTags: [{ type: 'PRODUCTS', id: 'products/table' }],
       transformResponse: (response: { data: getTableProductsType }) => response.data,
       keepUnusedDataFor: 60,
     }),
+
     getProduct: builder.query<getProductType, string>({
       query: (data) => ({
         url: 'products/product/'+data,
         method: 'GET',
-        // This is the same as passing 'text'
-        responseHandler: (response) => {
-          if (!response.ok) {
-            // Probably return some error object here
-            return response.text()
-          }
-          return response.json()
-        },
       }),
-      transformResponse: (response: { data: getProductType }) => response.data,
+      providesTags: [{ type: 'PRODUCTS', id: 'products/product' }],
       keepUnusedDataFor: 60,
     }),
+
     updateProducts: builder.mutation<getProductType, UpdateProductType>({
       query: (data) => ({
         url: 'products/update/'+data.productId,
         method: 'PATCH',
         body: JSON.stringify(data),
       }),
-      transformResponse: (response: { data: getProductType }) => response.data,
+      invalidatesTags: [{ type: 'PRODUCTS', id: 'products/product' }, { type: 'PRODUCTS', id: 'products/table' }],
     }),
-    deleteProducts: builder.query({
+
+    deleteProducts: builder.mutation({
       query: (data) => ({
         url: 'products/delete',
         method: 'DELETE',
@@ -96,18 +54,17 @@ export const productsService = api.injectEndpoints({
           return response.json()
         },
       }),
+      invalidatesTags: [{ type: 'PRODUCTS', id: 'products/product' }, { type: 'PRODUCTS', id: 'products/table' }],
     }),
   }),
 })
 
 export const {
-  useRegisterProductsQuery,
-  useLazyRegisterProductsQuery,
+  useRegisterProductsMutation,
   useGetTableProductsQuery,
   useLazyGetTableProductsQuery,
   useGetProductQuery,
   useLazyGetProductQuery,
   useUpdateProductsMutation,
-  useDeleteProductsQuery,
-  useLazyDeleteProductsQuery,
+  useDeleteProductsMutation
 } = productsService

@@ -2,29 +2,20 @@ import { type Request, type Response, type NextFunction } from 'express'
 import { check, body, validationResult } from 'express-validator'
 import { validateUsername, validatePassword, validateEmail } from './_commonValidations'
 
-export const userRegisterValidation = [
-    validateUsername('username'),
-    check('firstname')
+export const categoryRegisterValidation = [
+    check('name')
         .trim()
         .escape()
         .not()
         .isEmpty()
-        .withMessage('User firstname can not be empty!')
+        .withMessage('Categorys name can not be empty!')
         .bail(),
-    check('lastname')
+    check('description')
         .trim()
         .escape()
         .not()
         .isEmpty()
-        .withMessage('User lastname can not be empty!')
-        .bail(),
-    validateEmail('email'),
-    validatePassword('password', 'Password'),
-    validatePassword('passwordConfirmation', 'Password confirmation')
-        .custom((value, { req }) => {
-            return value === req.body.password
-        })
-        .withMessage('The password confirmation does not match with the password!')
+        .withMessage('Categorys description can not be empty!')
         .bail(),
 
     (req: Request, res: Response, next: NextFunction): Response | undefined => {
@@ -41,6 +32,8 @@ export const userRegisterValidation = [
         return undefined
     }
 ]
+
+/** *************************************************************************** */
 
 export const userDeleteValidation = [
     body('password')

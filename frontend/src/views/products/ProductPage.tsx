@@ -9,6 +9,7 @@ import CartFloatButton from '../../components/CartFloatButton'
 import { useGetProductQuery } from '../../services/product.service'
 import { parseLocarstorageUser } from '../../__helpers/isUser'
 import userEnum from '../../enums/user.enum'
+import { alertSlice } from '../../redux/slices/alertSlice'
 
 
 function ProductPage() {
@@ -18,9 +19,15 @@ function ProductPage() {
 
   const user = parseLocarstorageUser()
 
-  const { data } = useGetProductQuery(location.pathname.split('/')[3])
+  const { data, error } = useGetProductQuery(location.pathname.split('/')[3])
 
   const product = data?.result
+
+  React.useEffect(() => {
+    if (error) {
+      dispatch(alertSlice.actions.setAlert(error))
+    }
+  }, [error])
 
   return <>
     {/* NavBar */}

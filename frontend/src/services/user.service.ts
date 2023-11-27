@@ -1,52 +1,23 @@
 import { api } from './servicesConfig/api.service'
-
-
-/*type RegisterDataType = {
-  username: string
-  firstname: string
-  lastname: string
-  password: string
-  passwordConfirmation: string
-  email: string
-}*/
-
-type GetUserType = {
-  result: User
-  message: string
-}
-
-type UpdateDataType ={
-  username: string
-  firstname: string
-  lastname: string
-  email: string
-  role: number | undefined;
-  userId: string
-};
+import { AuthenticationUserType, GetUserType, LoginUserType, LoginUserTypeSuccess, RegisterUserType, SimpleResponse, UpdateDataType } from './servicesTypes/user.types'
 
 export const userService = api.injectEndpoints({
   endpoints: (builder) => ({
-    registerUser: builder.query({
+    registerUser: builder.mutation<SimpleResponse, RegisterUserType>({
       query: (data) => ({
         url: 'user/register',
         method: 'POST',
         body: JSON.stringify(data),
-        // This is the same as passing 'text'
-        responseHandler: (response) => {
-          if (!response.ok) {
-            // Probably return some error object here
-            return response.text()
-          }
-          return response.json()
-        },
       }),
     }),
+
     getUserByUsername: builder.query<GetUserType, string>({
       query: (data) => ({
         url: 'user/get-user-by-username/'+data,
         method: 'GET',
       }),
     }),
+
     updateUser: builder.mutation<GetUserType, UpdateDataType>({
       query: (data) => ({
         url: 'user/update',
@@ -54,7 +25,8 @@ export const userService = api.injectEndpoints({
         body: JSON.stringify(data),
       }),
     }),
-    authenticateUser: builder.query({
+
+    authenticateUser: builder.query<LoginUserTypeSuccess, AuthenticationUserType>({
       query: (data) => ({
         url: 'user/authenticate',
         method: 'POST',
@@ -69,6 +41,7 @@ export const userService = api.injectEndpoints({
         },
       }),
     }),
+
     deleteUser: builder.query({
       query: (data) => ({
         url: 'user/delete',
@@ -84,21 +57,15 @@ export const userService = api.injectEndpoints({
         },
       }),
     }),
-    loginUser: builder.query({
+
+    loginUser: builder.query<LoginUserTypeSuccess, LoginUserType>({
       query: (data) => ({
         url: 'user/login',
         method: 'POST',
         body: JSON.stringify(data),
-        // This is the same as passing 'text'
-        responseHandler: (response) => {
-          if (!response.ok) {
-            // Probably return some error object here
-            return response.text()
-          }
-          return response.json()
-        },
       }),
     }),
+
     ForgottenPasswordUser: builder.query({
       query: (data) => ({
         url: 'user/forgotten-password',
@@ -133,8 +100,7 @@ export const userService = api.injectEndpoints({
 })
 
 export const {
-  useRegisterUserQuery,
-  useLazyRegisterUserQuery,
+  useRegisterUserMutation,
   useUpdateUserMutation,
   useGetUserByUsernameQuery,
   useAuthenticateUserQuery,

@@ -4,6 +4,7 @@ import authHeader from '../../__helpers/auth-header'
 
 export const api = createApi({
   reducerPath: 'splitApi',
+  tagTypes: ['PRODUCTS', 'CATEGORY', 'SALES', 'USERS', 'AUTH', 'DELETE'],
   baseQuery: fetchBaseQuery({
     baseUrl: apiUrl,
     prepareHeaders: (headers) => {

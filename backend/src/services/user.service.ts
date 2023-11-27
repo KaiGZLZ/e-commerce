@@ -20,30 +20,23 @@ import userEnum from '../__helpers/enums/user.enum'
  *
  */
 export async function userRegister(data: userRegisterType): Promise<object> {
-    // Look if there is a user with the same name
-    let existingUser = await User.findOne({ username: data.username })
-
-    if (existingUser !== null) throw new Error('Already exists this username')
-
-    // Look if there is an user with the same email
-    existingUser = await User.findOne({ email: data.email })
-
-    if (existingUser !== null) throw new Error('The email was already used by ' + existingUser.username)
-
-    // If not, Register the new user
-
+    // The password will be encrypted
     const encryptedPassword = bcrypt.hashSync(data.password, bcrypt.genSaltSync(10))
     data.password = encryptedPassword
 
     const activationToken = bcrypt.hashSync(new Date().toString() + data.password + config.SECRET, bcrypt.genSaltSync(10))
     data.activationToken = activationToken
 
+    if (data.username === 'admin') {
+        data.role = userEnum.roles.admin
+    }
+
     const newUser = new User(data)
     const newUserSaved = await newUser.save()
 
     // The confirmation email will be sent
 
-    const subject = 'ToDoList Confirmation Email'
+    const subject = 'E-Commerce Confirmation Email'
     const text = 'To confirm the email'
     const html = activateAccountMail(process.env.URL_CONFIRMATION_EMAIL, activationToken)
 
@@ -155,7 +148,8 @@ export async function userLogin(data: userLoginType): Promise<object> {
             user: {
                 ...user.toJSON()
             },
-            token
+            token,
+            message: 'User logged successfully'
         }
     } else throw new Error('There is a problem with the username or the password')
 }
@@ -191,7 +185,8 @@ export async function userAuthenticate(data: userAuthenticateType): Promise<obje
         user: {
             ...user.toJSON()
         },
-        token
+        token,
+        message: 'User authenticated successfully'
     }
 }
 
@@ -216,7 +211,7 @@ export async function sendRecoveryEmail(data: sendRecoveryEmailType): Promise<vo
 
     // The email will be sent with the link to recover the password
 
-    const subject = 'ToDoList Recover Password'
+    const subject = 'E-Commerce Recover Password'
     const text = 'To confirm the email'
     const html = activateAccountMail(process.env.URL_RECOVER_PASSWORD, recoverPasswordToken)
 

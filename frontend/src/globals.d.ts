@@ -60,4 +60,16 @@ declare interface CustomError {
   data: object | null
 }
 
+declare interface Category {
+  _id: string
+  name: string
+  description: string
+  createdAt: string
+  updatedAt: string
+}
+
+declare interface SimpleResponse {
+  message: string
+}
+
 

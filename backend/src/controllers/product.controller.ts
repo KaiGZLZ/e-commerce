@@ -24,27 +24,27 @@ function productRegister(req: Request, res: Response, next: NextFunction): void 
 // Delete an product
 function productDelete(req: Request, res: Response, next: NextFunction): void {
     productService.productDelete(req.body)
-        .then(data => res.json({ data }))
+        .then(data => res.json(data))
         .catch(err => { next(err) })
 }
 
 // Delete an product
 function productUpdate(req: Request, res: Response, next: NextFunction): void {
     productService.productUpdate(req.body)
-        .then(data => res.json({ data }))
+        .then(data => res.json(data))
         .catch(err => { next(err) })
 }
 
 // Get a product
 function productGet(req: Request, res: Response, next: NextFunction): void {
     productService.productGet(req.params.id)
-        .then(data => res.json({ data }))
+        .then(data => res.json(data))
         .catch(err => { next(err) })
 }
 
 // Get a product
 function productTable(req: Request, res: Response, next: NextFunction): void {
     productService.productTable(req.query)
-        .then(data => res.json({ data }))
-        .catch(err => { console.log(err); next(err) })
+        .then(data => res.json(data))
+        .catch(err => { next(err) })
 }

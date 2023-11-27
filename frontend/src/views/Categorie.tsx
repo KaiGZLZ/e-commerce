@@ -7,13 +7,22 @@ import { useLocation } from 'react-router-dom'
 import CartFloatButton from '../components/CartFloatButton'
 import { useGetTableProductsQuery } from '../services/product.service'
 import Filter from '../components/Filter'
+import { useDispatch } from 'react-redux'
+import { alertSlice } from '../redux/slices/alertSlice'
 
 function Categorie() {
 
   const location = useLocation()
+  const dispatch = useDispatch()
   const categoryName = location.pathname.split('/')[3]
 
-  const { data: products, isLoading } = useGetTableProductsQuery(location.search ? location.search + `&category=${categoryName}` : `?category=${categoryName}`)
+  const { data: products, isLoading, error } = useGetTableProductsQuery(location.search ? location.search + `&category=${categoryName}` : `?category=${categoryName}`)
+
+  React.useEffect(() => {
+    if (error) {
+      dispatch(alertSlice.actions.setAlert(error))
+    }
+  }, [error])
 
   return <>
     {/* Navbar */}

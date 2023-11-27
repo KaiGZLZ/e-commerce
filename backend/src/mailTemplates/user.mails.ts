@@ -4,7 +4,7 @@
  */
 export function activateAccountMail(url: string | undefined, token: string): string {
     if (!url || !token) {
-        throw new Error('Error sendindg the ToDoList Confirmation Email')
+        throw new Error('Error sendindg the E-Commerce Confirmation Email')
     }
 
     return `<p><strong>Please</strong> <a href="${url + '#' + token}">Click here!</a> to activate your account</p>`
@@ -16,7 +16,7 @@ export function activateAccountMail(url: string | undefined, token: string): str
  */
 export function recoverPasswordMail(url: string, token: string | undefined): string {
     if (!url || !token) {
-        throw new Error('Error sendindg the ToDoList Confirmation Email')
+        throw new Error('Error sendindg the E-Commerce Confirmation Email')
     }
 
     return `<p><strong>Please</strong> <a href="${url + '#' + token}">Click here!</a> to recover your password</p>`

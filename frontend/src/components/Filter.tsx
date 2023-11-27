@@ -38,8 +38,6 @@ function Filter() {
 
   if (searchParams.get('order') && searchParams.get('orderType')) {
     if (searchParams.get('order') === 'price' && searchParams.get('orderType') === 'desc') {
-      console.log('llega')
-
       defaultSelectValue = 'Most Expensive'
     }
     else if (searchParams.get('order') === 'price' && searchParams.get('orderType') === 'asc') {
@@ -56,7 +54,14 @@ function Filter() {
         <Link to={'/'}>Home</Link> <ChevronRightIcon/> {categoryName}
       </Box>
       <Flex fontSize={15} pr={'20px'} flexDirection={'row'} alignItems={'center'} >
-          Order By: <Select size={'sm'} placeholder="Select option" width={'200px'} border={'none'} value={defaultSelectValue} onChange={onChangeOrder} >
+        Order By:
+        <Select size={'sm'}
+          placeholder="Select option"
+          width={'200px'}
+          border={'none'}
+          value={defaultSelectValue}
+          onChange={onChangeOrder}
+        >
           <option value="Cheaper">Cheaper</option>
           <option value="Most Expensive">Most Expensive</option>
           <option value="Name">Name</option>

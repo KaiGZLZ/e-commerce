@@ -2,7 +2,7 @@ import { type Request, type Response, type NextFunction } from 'express'
 import { validationResult } from 'express-validator'
 import { validateObjectId, validateRequiredString, validatePositiveNumber } from './_commonValidations'
 
-export const saleRegisterValidation = [
+export const salesRegisterValidation = [
     validateObjectId('products.*._id', 'Products id'),
     validateObjectId('products.*.product', 'Products product'),
     validateRequiredString('products.*.name', 'Products name'),

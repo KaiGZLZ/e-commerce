@@ -7,7 +7,8 @@ import { useForm  } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { alertSlice } from '../../redux/slices/alertSlice'
 import Navbar from '../../components/Navbar'
-import { useLazyRegisterCategoryQuery } from '../../services/category.service'
+import { useRegisterCategoryMutation } from '../../services/category.service'
+import { useNavigate } from 'react-router-dom'
 
 type RegisterData = {
   name: string
@@ -17,9 +18,10 @@ type RegisterData = {
 function RegisterCategorie() {
 
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   // RTK Query
-  const [registerData, { isFetching }] = useLazyRegisterCategoryQuery()
+  const [registerData, { isLoading }] = useRegisterCategoryMutation()
 
 
   // Form data
@@ -27,24 +29,14 @@ function RegisterCategorie() {
 
   const onSubmit= (data: RegisterData)  => {
     registerData(data)
+      .unwrap()
       .then((response) => {
-        if(response.isSuccess){
-          setFocus('name')
-          reset()
-          dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: 'Category registered successfully' }))
-
-        }
-        else{
-          if (response.error){
-            if ('status' in response.error) {
-              const errData = 'error' in response.error ? response.error.error : JSON.stringify(response.error.data)
-              dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: errData }))
-            }
-          }
-        }
+        setFocus('name')
+        reset()
+        dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: response.message }))
       })
       .catch((e) =>{
-        console.log(e)
+        dispatch(alertSlice.actions.setAlert(e))
       })
   }
 
@@ -87,10 +79,16 @@ function RegisterCategorie() {
           </Box>
           {/* Submit button */}
           <Flex justifyContent={'space-between'}>
-            <Button isLoading={isFetching} loadingText='Registering' type='submit' colorScheme="teal" size="sm">
+            <Button type='submit' colorScheme="teal" size="sm"
+              isLoading={isLoading}
+              loadingText='Registering'
+            >
               Register
             </Button>
-            <Button isDisabled={isFetching} colorScheme={'gray'} size="sm" onClick={() => { history.back() }} >
+            <Button  colorScheme={'gray'} size="sm"
+              isDisabled={isLoading}
+              onClick={() => { navigate(-1) }}
+            >
               Cancel
             </Button>
           </Flex>

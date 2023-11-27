@@ -1,11 +1,11 @@
 
 import React from 'react'
-import { Box, Flex, Input, InputGroup, InputLeftElement,Button, Spinner } from '@chakra-ui/react'
+import { Box, Flex, Input, InputGroup, InputLeftElement,Button } from '@chakra-ui/react'
 import { ArrowRightIcon } from '@chakra-ui/icons'
 //import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm  } from 'react-hook-form'
-import { useLazyRegisterUserQuery } from '../../services/user.service'
+import { useRegisterUserMutation } from '../../services/user.service'
 import { useDispatch } from 'react-redux'
 import { alertSlice } from '../../redux/slices/alertSlice'
 
@@ -24,30 +24,21 @@ function Register() {
   const navigate = useNavigate()
 
   // RTK Query
-  const [registerUser, { isFetching }] = useLazyRegisterUserQuery()
+  const [registerUser, { isLoading }] = useRegisterUserMutation()
 
   // Form data
   const { register, handleSubmit, formState: { errors }, reset } = useForm<RegisterData>()
 
   const onSubmit= (data: RegisterData)  => {
     registerUser(data)
+      .unwrap()
       .then((response) => {
-        if(response.isSuccess){
-          reset()
-          dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: 'User registered successfully' }))
-          navigate('/login')
-        }
-        else{
-          if (response.error){
-            if ('status' in response.error) {
-              const errData = 'error' in response.error ? response.error.error : JSON.stringify(response.error.data)
-              dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: errData }))
-            }
-          }
-        }
+        reset()
+        dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: response.message }))
+        navigate('/login')
       })
       .catch((e) =>{
-        console.log(e)
+        dispatch(alertSlice.actions.setAlert(e))
       })
   }
 
@@ -132,8 +123,11 @@ function Register() {
             </Link>
           </Flex>
           {/* Login button */}
-          <Button disabled={isFetching} type='submit' colorScheme="teal" size="sm">
-            { isFetching ? <Spinner /> : ''} Register
+          <Button  type='submit' colorScheme="teal" size="sm"
+            isLoading={isLoading}
+            loadingText="Registering"
+          >
+            Register
           </Button>
         </Flex>
       </form>

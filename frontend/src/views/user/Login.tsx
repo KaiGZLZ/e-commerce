@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { Box, Flex, Input, InputGroup, InputLeftElement,Button, Spinner } from '@chakra-ui/react'
+import { Box, Flex, Input, InputGroup, InputLeftElement,Button } from '@chakra-ui/react'
 import { ArrowRightIcon } from '@chakra-ui/icons'
 //import { useDispatch } from 'react-redux'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
@@ -8,7 +8,6 @@ import { useForm  } from 'react-hook-form'
 import { useLazyLoginUserQuery } from '../../services/user.service'
 import { useDispatch } from 'react-redux'
 import { alertSlice } from '../../redux/slices/alertSlice'
-import { userSlice } from '../../redux/slices/userSlice'
 import { isUser, parseLocarstorageUser } from '../../__helpers/isUser'
 
 type LoginData = {
@@ -37,41 +36,32 @@ function Login() {
   const onSubmit= (data: LoginData)  => {
 
     loginUser(data)
+      .unwrap()
       .then((response) => {
-        if(response.isSuccess){
 
-          const user = isUser(response.data.user)
+        const user = isUser(response.user)
 
-          // If the response doesn't have the necesary data, show an error
-          if(!user){
-            dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: 'Error getting user data' }))
-            return
-          }
-          localStorage.setItem('user', JSON.stringify(user))
-
-          // If the response doesn't have the token, show an error
-          if(!response.data.token){
-            dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: 'Error getting token' }))
-            return
-          }
-          localStorage.setItem('token', response.data.token)
-
-          dispatch(userSlice.actions.setUser(user))
-          dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: 'User logged successfully' }))
-          navigate('/')
+        // If the response doesn't have the necesary data, show an error
+        if(!user){
+          dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: 'Error getting user data' }))
+          return
         }
-        else{
-          if (response.error){
-            if ('status' in response.error) {
-              const errData = 'error' in response.error ? response.error.error : JSON.stringify(response.error.data)
-              dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: errData }))
-            }
-          }
+        localStorage.setItem('user', JSON.stringify(user))
+
+        // If the response doesn't have the token, show an error
+        if(!response.token){
+          dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: 'Error getting token' }))
+          return
         }
+        localStorage.setItem('token', response.token)
+
+        //dispatch(userSlice.actions.setUser(user))
+        dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: response.message }))
+        navigate('/')
       })
-      .catch((error) =>
-        console.log(error)
-      )
+      .catch((e) => {
+        dispatch(alertSlice.actions.setAlert(e))
+      })
   }
 
   return <>
@@ -81,11 +71,11 @@ function Login() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Flex position={'relative'} flexDir={'column'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} width={'100%'} maxWidth={'1200px'} border={'1px'} padding={'20px'} color={'gray.600'} rounded={10} bg={'gray.50'} >
           <Box position={'absolute'} top={5} left={5} >
-            <Link to={'/'}>
-              <Box fontSize={15} textDecor={'underline'} color={'gray.600'} _hover={{ color:'#fcb941' }}>
-                {'Back'}
-              </Box>
-            </Link>
+            <Box fontSize={15} textDecor={'underline'} color={'gray.600'} _hover={{ color:'#fcb941' }}
+              onClick={() => navigate(-1)}
+            >
+              Back
+            </Box>
           </Box>
           <Box fontSize={30} fontWeight={'bold'} textAlign={'center'} marginBottom={'45px'}>Login</Box>
           {/* Username */}
@@ -122,8 +112,11 @@ function Login() {
             </Link>
           </Flex>
           {/* Login button */}
-          <Button disabled={isFetching} type='submit' colorScheme="teal" size="sm">
-            { isFetching ? <Spinner /> : ''} Login
+          <Button type='submit' colorScheme="teal" size="sm"
+            isLoading={isFetching}
+            loadingText="Loading"
+          >
+            Login
           </Button>
         </Flex>
       </form>

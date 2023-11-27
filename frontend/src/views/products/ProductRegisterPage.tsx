@@ -9,18 +9,18 @@ import { alertSlice } from '../../redux/slices/alertSlice'
 import { useGetAllCategoriesQuery } from '../../services/category.service'
 import { NumericFormat } from 'react-number-format'
 import { NumberFormatValues } from 'react-number-format/types/types'
-import { useLazyRegisterProductsQuery } from '../../services/product.service'
+import { useRegisterProductsMutation } from '../../services/product.service'
 import Navbar from '../../components/Navbar'
 import { history } from '../../__helpers/history'
 
 type RegisterData = {
   name: string
-  price: number | undefined
+  price: number
   description: string
   category: string
   wholesalePrice: number | undefined
   orderMinForWholesale: number | undefined
-  stock: number | undefined
+  stock: number
 }
 
 function ProductRegisterPage() {
@@ -28,7 +28,7 @@ function ProductRegisterPage() {
   const dispatch = useDispatch()
 
   // RTK Query
-  const [registerData, { isFetching }] = useLazyRegisterProductsQuery()
+  const [registerData, { isLoading }] = useRegisterProductsMutation()
   const { data: categories, isFetching: isFetchingCategories } = useGetAllCategoriesQuery()
 
 
@@ -53,25 +53,16 @@ function ProductRegisterPage() {
     }
 
     registerData(dataToSend)
+      .unwrap()
       .then((response) => {
-        if(response.isSuccess){
-          dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: 'Product registered successfully' }))
-          // Focus on first input
-          setFocus('name')
-          reset({ name: '', description: '', category: '', price: undefined, wholesalePrice: undefined, orderMinForWholesale: undefined, stock: undefined })
-          setTagArray([])
-        }
-        else{
-          if (response.error){
-            if ('status' in response.error) {
-              const errData = 'error' in response.error ? response.error.error : JSON.stringify(response.error.data)
-              dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: errData }))
-            }
-          }
-        }
+        dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: response.message }))
+        // Focus on first input
+        setFocus('name')
+        reset({ name: '', description: '', category: '', price: undefined, wholesalePrice: undefined, orderMinForWholesale: undefined, stock: undefined })
+        setTagArray([])
       })
       .catch((e) =>{
-        console.log(e)
+        dispatch(alertSlice.actions.setAlert(e))
       })
   }
 
@@ -125,7 +116,7 @@ function ProductRegisterPage() {
                 decimalScale={2}
                 allowNegative={false}
                 value={watch('price') || ''}
-                onValueChange={(values: NumberFormatValues) => setValue('price', values.floatValue)}
+                onValueChange={(values: NumberFormatValues) => setValue('price', values.floatValue || 0)}
                 {...register('price', { required: 'The price is required' })}
               />
             </InputGroup>
@@ -252,7 +243,7 @@ function ProductRegisterPage() {
                 decimalScale={2}
                 allowNegative={false}
                 value={watch('stock') || ''}
-                onValueChange={(values: NumberFormatValues) => setValue('stock', values.floatValue)}
+                onValueChange={(values: NumberFormatValues) => setValue('stock', values.floatValue || 0)}
                 {...register('stock', { required: 'The stock is required' })}
               />
             </InputGroup>
@@ -261,11 +252,16 @@ function ProductRegisterPage() {
 
           {/* Submit button */}
           <Flex justifyContent={'space-between'}>
-            <Button disabled={isFetching || isFetchingCategories} type='submit' colorScheme="teal" size="sm">
-              { isFetching ? <Spinner /> : ''} Register
+            <Button type='submit' colorScheme="teal" size="sm"
+              isLoading={isLoading || isFetchingCategories}
+            >
+              { isLoading ? <Spinner /> : ''} Register
             </Button>
-            <Button disabled={isFetching || isFetchingCategories} colorScheme={'gray'} size="sm" onClick={() => { history.back() }} >
-              { isFetching ? <Spinner /> : ''} Cancel
+            <Button  colorScheme={'gray'} size="sm"
+              onClick={() => { history.back() }}
+              isLoading={isLoading || isFetchingCategories}
+            >
+              { isLoading ? <Spinner /> : ''} Cancel
             </Button>
           </Flex>
         </form>

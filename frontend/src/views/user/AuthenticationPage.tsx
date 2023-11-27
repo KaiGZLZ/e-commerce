@@ -28,46 +28,34 @@ function Authentication() {
       token: token
     }
     authenticateUser(data)
+      .unwrap()
       .then((response) => {
-        if(response.isSuccess){
 
-          const user = isUser(response.data.user)
+        const user = isUser(response.user)
 
-          if(!user){
-            dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: 'Error getting user data' }))
-            navigate('/')
-            return
-          }
-          localStorage.setItem('user', JSON.stringify(user))
-
-          if(!response.data.token){
-            dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: 'Error getting token' }))
-            navigate('/')
-            return
-          }
-          localStorage.setItem('token', response.data.token)
-
-          dispatch(userSlice.actions.setUser(user))
-          dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: 'User logged successfully' }))
+        if(!user){
+          dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: 'Error getting user data' }))
           navigate('/')
+          return
         }
-        else{
-          if (response.error){
-            if ('status' in response.error) {
-              const errData = 'error' in response.error ? response.error.error : JSON.stringify(response.error.data)
-              dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: errData }))
-            }
-          }
-          navigate('/login')
+        localStorage.setItem('user', JSON.stringify(user))
+
+        if(!response.token){
+          dispatch(alertSlice.actions.setAlert({ status: 'error', title: 'Error', message: 'Error getting token' }))
+          navigate('/')
+          return
         }
+        localStorage.setItem('token', response.token)
+
+        dispatch(userSlice.actions.setUser(user))
+        dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: response.message }))
+        navigate('/')
       })
       .catch((error) =>
-        console.log(error)
+        dispatch(alertSlice.actions.setAlert(error))
       )
 
   }, [])
-
-
 
   return <>
     <Flex alignItems={'center'} justifyContent={'center'} width={'100%'} height={'100vh'} maxWidth={'1200px'} bg={'whiteAlpha.800'}>
