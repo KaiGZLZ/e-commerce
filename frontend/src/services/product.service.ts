@@ -18,7 +18,6 @@ export const productsService = api.injectEndpoints({
         method: 'GET',
       }),
       providesTags: [{ type: 'PRODUCTS', id: 'products/table' }],
-      transformResponse: (response: { data: getTableProductsType }) => response.data,
       keepUnusedDataFor: 60,
     }),
 

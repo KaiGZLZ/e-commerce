@@ -104,20 +104,20 @@ function Navbar() {
                   shadow='md'
                   flexDir={'column'}
                 >
-                  <Link to={'/products/register'}>
-                    <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
-                     Register a product
-                    </Flex>
-                  </Link>
-                  <Link to={'/categories/register'}>
-                    <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
-                    Register a category
-                    </Flex>
-                  </Link>
                   { (user.role === userEnum.role.admin) ? <>
+                    <Link to={'/products/register'}>
+                      <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
+                        Register a product
+                      </Flex>
+                    </Link>
+                    <Link to={'/categories/register'}>
+                      <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
+                        Register a category
+                      </Flex>
+                    </Link>
                     <Link to={'/users/search'}>
                       <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
-                      Search user
+                        Search user
                       </Flex>
                     </Link>
                   </> : <>
@@ -127,11 +127,6 @@ function Navbar() {
                       </Flex>
                     </Link>
                   </>}
-                  <Link to={'/categories/categorie_4'}>
-                    <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
-                    Contact4
-                    </Flex>
-                  </Link>
                   <Link to={location.pathname}>
                     <Button fontWeight={'bold'} width={'100%'} height={'auto'} alignItems={'center'} justifyContent={'center'} bg={'red.200'} color="white" paddingY={'1rem'} _hover={{ bg: 'blue.500' }}
                       onClick={() => {

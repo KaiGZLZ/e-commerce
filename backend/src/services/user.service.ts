@@ -8,6 +8,7 @@ import sendMail from '../__helpers/sendEmail'
 import { activateAccountMail } from '../mailTemplates/user.mails'
 import { type userUpdateType, type getUserByUsernameType, type sendRecoveryEmailType, type userAuthenticateType, type userChangePasswordType, type userDeleteType, type userLoginType, type userRegisterType } from './_servicesTypes/userService.types'
 import userEnum from '../__helpers/enums/user.enum'
+import mongoose from 'mongoose'
 
 /** Funtion to register an user
  *
@@ -31,24 +32,35 @@ export async function userRegister(data: userRegisterType): Promise<object> {
         data.role = userEnum.roles.admin
     }
 
-    const newUser = new User(data)
-    const newUserSaved = await newUser.save()
-
-    // The confirmation email will be sent
-
-    const subject = 'E-Commerce Confirmation Email'
-    const text = 'To confirm the email'
-    const html = activateAccountMail(process.env.URL_CONFIRMATION_EMAIL, activationToken)
+    const session = await mongoose.connection.startSession()
 
     try {
-        await sendMail(data.email, subject, text, html)
-    } catch (e) {
-        await User.findByIdAndDelete(newUserSaved._id)
-        throw new Error('There was a problem sending the email. Please try again later')
-    }
+        session.startTransaction()
+        const newUser = new User(data)
+        await newUser.save({ session })
 
-    return {
-        message: 'User added successfully'
+        // The confirmation email will be sent
+
+        const subject = 'E-Commerce Confirmation Email'
+        const text = 'To confirm the email'
+        const html = activateAccountMail(process.env.URL_CONFIRMATION_EMAIL, activationToken)
+
+        try {
+            await sendMail(data.email, subject, text, html)
+        } catch (e) {
+            throw new Error('There was a problem sending the email. Please try again later')
+        }
+
+        await session.commitTransaction()
+        await session.endSession()
+
+        return {
+            message: 'User added successfully'
+        }
+    } catch (error) {
+        await session.abortTransaction()
+        await session.endSession()
+        throw error
     }
 }
 

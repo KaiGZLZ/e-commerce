@@ -45,7 +45,7 @@ function userUpdate(req: Request, res: Response, next: NextFunction): void {
 // Delete an user
 function userDelete(req: Request, res: Response, next: NextFunction): void {
     userService.userDelete(req.body)
-        .then(data => res.json({ data }))
+        .then(data => res.json(data))
         .catch(err => { next(err) })
 }
 

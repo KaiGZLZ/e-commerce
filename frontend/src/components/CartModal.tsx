@@ -249,7 +249,7 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
                 <ModalHeader>Modal Without User</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                  <Text>Oh! It seems that you are not logged in. Please enter your email to sent all the sale information</Text>
+                  <Text>Oh! It seems that you are not logged in. Please enter your email to sent you all the sale information</Text>
                   &nbsp;
                   <FormControl>
                     <FormLabel>Email</FormLabel>
