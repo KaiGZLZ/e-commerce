@@ -17,14 +17,17 @@ function Filter() {
       if(e.target.value === 'Most Expensive'){
         searchParams.set('order', 'price')
         searchParams.set('orderType', 'desc')
+        searchParams.delete('page')
       }
       else if (e.target.value === 'Cheaper') {
         searchParams.set('order', 'price')
         searchParams.set('orderType', 'asc')
+        searchParams.delete('page')
       }
       else if (e.target.value === 'Name') {
         searchParams.set('order', 'name')
         searchParams.set('orderType', 'asc')
+        searchParams.delete('page')
       }
       setSearchParams(searchParams)
     }

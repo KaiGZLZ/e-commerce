@@ -11,6 +11,7 @@ import { alertSlice } from '../../redux/slices/alertSlice'
 import { parseLocarstorageUser } from '../../__helpers/isUser'
 import Navbar from '../../components/Navbar'
 import userEnum from '../../enums/user.enum'
+import FooterComponent from '../../components/FooterComponent'
 
 type UpdateData = {
   username: string
@@ -164,6 +165,11 @@ function UserEdit() {
           </Button>
         </Flex>
       </form>
+    </Flex>
+
+    {/* Footer component */}
+    <Flex flexDirection={'column'} width={'100%'} maxWidth={'1200px'}>
+      <FooterComponent  />
     </Flex>
   </>
 }

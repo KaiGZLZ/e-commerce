@@ -1,12 +1,13 @@
 import React from 'react'
-import { Box, Flex, Spacer, IconButton, useDisclosure, Collapse, Input, InputGroup, InputLeftElement, Center, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody, Button, Spinner, Icon } from '@chakra-ui/react'
-import { HamburgerIcon, CloseIcon, SearchIcon, SettingsIcon, WarningTwoIcon, AtSignIcon, ChevronDownIcon } from '@chakra-ui/icons'
+import { Box, Flex, Spacer, IconButton, useDisclosure, Collapse, Center, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody, Button, Spinner, Icon } from '@chakra-ui/react'
+import { HamburgerIcon, CloseIcon, SettingsIcon, WarningTwoIcon, AtSignIcon, ChevronDownIcon } from '@chakra-ui/icons'
 import { Link, useLocation } from 'react-router-dom'
 import { parseLocarstorageUser } from '../__helpers/isUser'
 import { userSlice } from '../redux/slices/userSlice'
 import { useDispatch } from 'react-redux'
 import { useGetAllCategoriesQuery } from '../services/category.service'
 import userEnum from '../enums/user.enum'
+import AsyncSearchInput from './AsyncSearchInput'
 
 function Navbar() {
   const location = useLocation()
@@ -20,9 +21,9 @@ function Navbar() {
 
   const { data: categories, isFetching: isFetchingCategories } = useGetAllCategoriesQuery()
 
-  return (<Flex flexDirection={'column'} width={'100%'} maxWidth={'1200px'}>
+  return (<Flex flexDirection={'column'} width={'100%'} alignItems={'center'} justifyContent={'center'} bg={'blackAlpha.900'}>
 
-    <Box bg="gray.600" px={4} width={'100%'} maxWidth={'1200px'} >
+    <Box px={4} width={'100%'} maxWidth={'1200px'} paddingTop={'1.5rem'} >
       <Flex h={16} alignItems="center" justifyContent="space-between">
         <IconButton
           aria-label='Open Menu'
@@ -32,17 +33,24 @@ function Navbar() {
           display={{ md: 'none' }}
         />
         <Link to="/">
-          Logo
+          <Box
+            fontSize={20}
+            fontWeight={'bold'}
+            width={'10rem'}
+            color={'gray.900'}
+            bg={'gray.200'}
+            rounded={'md'} px={2} py={2}
+            _hover={{ bg: 'gray.300' }}
+            display={['none', 'none', 'flex', 'flex']}
+
+          >
+            E-commerce
+          </Box>
         </Link>
         <Spacer />
-        <InputGroup width={['13rem', '15rem', '20rem']} color={'white'}>
-          <InputLeftElement pointerEvents='none'>
-            <SearchIcon color='gray.300' />
-          </InputLeftElement>
-          <Input type='tel' placeholder='Buscar un producto' />
-        </InputGroup>
+        <AsyncSearchInput />
         <Spacer />
-        <Flex display={['none', 'none', 'flex', 'flex']} alignItems="center">
+        {/* <Flex display={['none', 'none', 'flex', 'flex']} alignItems="center">
           <Link to={'/about'}>
             <Flex alignItems="center"  mr={6} color="white">
               Aboutss
@@ -58,7 +66,7 @@ function Navbar() {
               Contact
             </Flex>
           </Link>
-        </Flex>
+        </Flex> */}
         {!user ?
           <Flex>
             { /* Login Button */}
@@ -154,13 +162,13 @@ function Navbar() {
           fontWeight={'bold'} minHeight={categoriesAreOpen ? '100vh' : '100vh'}
           display={['flex', 'flex', 'none', 'none']}
         >
-          <Link to={'/about'}>
+          {/* <Link to={'/about'}>
             <Flex alignItems="center"  mr={6} color="white" marginTop={'3rem'} marginBottom={'1rem'}>
               Abouts
             </Flex>
-          </Link>
+          </Link> */}
           <Flex alignItems="center"  mr={6} color="white" marginTop={'3rem'} marginBottom={'1rem'} onClick={openCategories2}>
-            Categorias
+            Categories
           </Flex>
           <Collapse in={categoriesAreOpen2} animateOpacity style={{ width: '100%' }}>
             <Flex
@@ -187,11 +195,11 @@ function Navbar() {
               }
             </Flex>
           </Collapse>
-          <Link to={'/contact'}>
+          {/* <Link to={'/contact'}>
             <Flex alignItems="center"  mr={6} color="white" marginTop={'3rem'} marginBottom={'1rem'}>
               Contact
             </Flex>
-          </Link>
+          </Link> */}
           { !user && <>
             <Link to={'/login'}>
               <Flex alignItems="center"  mr={6} color="white" marginTop={'3rem'} marginBottom={'1rem'}>
@@ -204,8 +212,8 @@ function Navbar() {
     </Box >
 
     {/* Categories popover for big screen  */}
-    <Box bg="gray.600" px={10} width={'100%'} maxWidth={'1200px'} display={['none', 'none', 'block', 'block']}>
-      <Flex paddingBottom={1} alignItems="center" justifyContent="space-between">
+    <Box px={10} width={'100%'} maxWidth={'1200px'} display={['none', 'none', 'block', 'block']}paddingTop={'0.5rem'} paddingBottom={'0'}>
+      <Flex paddingBottom={0} alignItems="center" justifyContent="space-between">
         <Box
           position={'relative'}
           role='group'
@@ -230,12 +238,13 @@ function Navbar() {
             position={'absolute'}
             border={'1px solid'}
             width={'100%'}
-            zIndex={1}
+            zIndex={2}
             height={'auto'}
             maxHeight={'0px'}
-            bg={'teal.500'}
+            bg={'blackAlpha.900'}
+            opacity={1}
             visibility={'hidden'}
-            transitionDuration={'0.5s'}
+            transitionDuration={'0.1s'}
             transitionTimingFunction={'ease'}
             transitionProperty={'max-height, visibility'}
             _hover={{ maxHeight:'1000px', visibility:'visible' }}
@@ -246,7 +255,7 @@ function Navbar() {
                 <Spinner /> :
                 categories ? categories.map((categorie) => (
                   <Link to={`/products/category/${categorie.name}`} key={categorie._id}>
-                    <Flex color="white" padding={'1rem'} transition={'0.25s'} _hover={{ bg: 'teal.400' }}>
+                    <Flex color="white" padding={'1rem'}  _hover={{ bg: 'gray.500' }}>
                       {categorie.name}
                     </Flex>
                   </Link>
@@ -256,11 +265,11 @@ function Navbar() {
           </Box>
         </Box>
         <Spacer />
-        <Link to={'/offers'}>
+        {/* <Link to={'/offers'}>
           <Flex mr={6} color="white" fontWeight={'bold'} px={10} py={2} _hover={{ bg: 'gray.500' }}>
               Offers
           </Flex>
-        </Link>
+        </Link> */}
         <Spacer />
       </Flex>
     </Box >

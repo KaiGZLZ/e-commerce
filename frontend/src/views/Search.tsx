@@ -1,9 +1,9 @@
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import ProductGrid from '../components/ProductGrid'
 import { Flex, Box, Spinner } from '@chakra-ui/react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import CartFloatButton from '../components/CartFloatButton'
 import { useGetTableProductsQuery } from '../services/product.service'
 import Filter from '../components/Filter'
@@ -12,13 +12,13 @@ import { alertSlice } from '../redux/slices/alertSlice'
 import PaginationBlock from '../components/PaginationBlock'
 import FooterComponent from '../components/FooterComponent'
 
-function Categorie() {
+function Search() {
 
   const location = useLocation()
+  const [searchParams] = useSearchParams()
   const dispatch = useDispatch()
-  const categoryName = location.pathname.split('/')[3]
 
-  const { data: products, isLoading, error } = useGetTableProductsQuery(location.search ? location.search + `&category=${categoryName}` : `?category=${categoryName}`)
+  const { data: products, isLoading, error } = useGetTableProductsQuery(location.search)
 
   React.useEffect(() => {
     if (error) {
@@ -26,18 +26,17 @@ function Categorie() {
     }
   }, [error])
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.scrollTo(0, 0)
   }, [products])
 
   return <>
     {/* Navbar */}
     <Navbar />
+
     <Flex flexDirection={'column'} width={'100%'} maxWidth={'1200px'}>
-      <Flex width={'100%'} height={'170px'} alignItems={'center'} justifyContent={'center'} flexDirection={'column'}  bg="blackAlpha.200"
-      >
-        <Box fontSize={40} color={'blackAlpha.900'} fontWeight={'bold'} opacity={1} zIndex={1}>{categoryName}</Box>
-        <Box fontSize={20}>Store</Box>
+      <Flex width={'100%'} height={['100px','100px','170px','170px']} alignItems={'center'} justifyContent={'center'} flexDirection={'column'}>
+        <Box fontSize={[20,20,40,40]}>Search results for: {'"'}{searchParams.get('search') || ''}{'"'}</Box>
       </Flex>
 
       {/* Filter */}
@@ -69,4 +68,4 @@ function Categorie() {
   </>
 }
 
-export default Categorie
+export default Search

@@ -10,6 +10,7 @@ import { useGetProductQuery } from '../../services/product.service'
 import { parseLocarstorageUser } from '../../__helpers/isUser'
 import userEnum from '../../enums/user.enum'
 import { alertSlice } from '../../redux/slices/alertSlice'
+import FooterComponent from '../../components/FooterComponent'
 
 
 function ProductPage() {
@@ -28,6 +29,10 @@ function ProductPage() {
       dispatch(alertSlice.actions.setAlert(error))
     }
   }, [error])
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [product])
 
   return <>
     {/* NavBar */}
@@ -165,8 +170,8 @@ function ProductPage() {
       </Tabs>
     </Flex>
 
-    {/* Similar products */}
-
+    {/* Footer component */}
+    <FooterComponent  />
 
     {/* Cart Button */}
     <CartFloatButton />

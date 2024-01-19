@@ -17,6 +17,7 @@ import moment from 'moment'
 import ModalSentPackage from '../../components/salePage/ModalSentPackage'
 import ModalRejection from '../../components/salePage/ModalRejection'
 import ModalPackageReceived from '../../components/salePage/ModalPackageReceived'
+import FooterComponent from '../../components/FooterComponent'
 
 
 function SalePage() {
@@ -214,6 +215,10 @@ function SalePage() {
         </Box>
       </Box>
     </>}
+
+
+    {/* Footer component */}
+    <FooterComponent  />
 
 
     {/* Modal Stepper */}

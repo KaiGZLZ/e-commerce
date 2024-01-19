@@ -43,9 +43,6 @@ export async function productRegister(data: productRegisterType): Promise<object
 }
 
 export async function productTable(query: any): Promise<object> {
-    const skipConstant = 0
-    const limitConstatnt = 20
-
     // If there is sort query, add it to the sort object
     let sort: any = {}
     if (query.order && query.orderType) {
@@ -59,12 +56,26 @@ export async function productTable(query: any): Promise<object> {
         filter.category = query.category
     }
 
-    const result = await Product.find(filter).sort(sort).skip(skipConstant).limit(limitConstatnt)
+    // If there is a search query, we find coincidences in the name and description
+    if (query.search) {
+        filter.$or = [
+            { name: { $regex: query.search, $options: 'i' } },
+            { description: { $regex: query.search, $options: 'i' } },
+            { tags: { $in: [query.search] } }
+        ]
+    }
+
+    // The pagination options are added
+    const limit = 6
+    const skip = query.page ? (query.page - 1) * limit : 0
+
+    const result = await Product.find(filter).sort(sort).skip(skip).limit(limit)
     const total = await Product.find(filter).countDocuments()
 
     return {
         result,
-        total
+        total,
+        totalPages: Math.ceil(total / limit)
     }
 }
 

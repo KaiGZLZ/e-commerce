@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Icon, Text, Flex, Box, Grid, IconButton, useDisclosure, Collapse, Input, FormLabel, FormControl } from '@chakra-ui/react'
-import { ArrowBackIcon, ChevronDownIcon, ChevronUpIcon, CloseIcon } from '@chakra-ui/icons'
+import { ArrowBackIcon, ChevronDownIcon, ChevronUpIcon, CloseIcon, WarningIcon } from '@chakra-ui/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../redux/store/store'
 import { NumericFormat } from 'react-number-format'
@@ -62,7 +62,7 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
         navigate(`/sales/sale/${res.saleId}`)
       })
       .catch((err) => {
-        setErrorEmailMessage(err.data)
+        setErrorEmailMessage(err.data.message)
       })
   }
 
@@ -183,8 +183,6 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
 
             </Flex>
 
-
-
             <Collapse startingHeight={0} in={openTotals}>
               <Flex justifyContent={'space-between'} flexDirection={'column'} marginBottom={'25px'} fontSize={'20px'} fontWeight={'bold'}>
                 <Box>
@@ -215,13 +213,13 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
       {
         user ?
           <>
-            {/* Modal confirmation */}
+            {/* Modal confirmation WITH an user Logged in */}
             <Modal isCentered isOpen={isOpenConfirmation} onClose={onCloseConfirmation} size={'xl'}>
               <ModalOverlay
                 bg='blackAlpha.500'
               />
               <ModalContent>
-                <ModalHeader>Modal With User</ModalHeader>
+                <ModalHeader>Final confirmation</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                   <Text> Hi <b>{user.firstname}</b>!. Please confirm your sale</Text>
@@ -240,13 +238,20 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
           </>
           :
           <>
-            {/* Modal confirmation without an user logged in */}
+            {/* Modal confirmation WITHOUT an user logged in */}
             <Modal isCentered isOpen={isOpenConfirmation} onClose={() => {setErrorEmailMessage(''); onCloseConfirmation()}} size={'xl'}>
               <ModalOverlay
                 bg='blackAlpha.500'
               />
               <ModalContent>
-                <ModalHeader>Modal Without User</ModalHeader>
+                <ModalHeader>
+                  <Icon
+                    marginRight={'10px'}
+                    as={WarningIcon}
+                    cursor={'pointer'}
+                  />
+                  You are not logged in
+                </ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                   <Text>Oh! It seems that you are not logged in. Please enter your email to sent you all the sale information</Text>
@@ -260,7 +265,6 @@ export function CartModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
                 <ModalFooter>
                   <Button bg={'green'} color={'white'}
                     onClick={confirmCheckout}
-                    disabled={isLoading}
                     isLoading={isLoading}
                     loadingText='Registering...'
                   >

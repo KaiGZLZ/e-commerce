@@ -1,11 +1,11 @@
 
 import React, { useEffect, useState } from 'react'
 import { Flex, IconButton } from '@chakra-ui/react'
-import { AddIcon } from '@chakra-ui/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../redux/store/store'
 import { setCart } from '../redux/slices/cartSlice'
 import { CartModal } from './CartModal'
+import { FaCartPlus } from 'react-icons/fa'
 
 function CartFloatButton() {
 
@@ -57,7 +57,7 @@ function CartFloatButton() {
         }}
       >
         <IconButton
-          icon={<AddIcon />}
+          icon={<FaCartPlus />}
           aria-label="Previous Image"
           bg={'blue.300'}
           rounded={50}

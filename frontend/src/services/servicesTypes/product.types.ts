@@ -16,6 +16,7 @@ export type RegisterProductTypeSuccess = {
 export type getTableProductsType = {
   result: Product[]
   total: number
+  totalPages: number
   message: string
 }
 

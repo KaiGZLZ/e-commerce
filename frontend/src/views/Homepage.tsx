@@ -7,6 +7,7 @@ import ProductGrid from '../components/ProductGrid'
 import { useDispatch } from 'react-redux'
 import { setCart } from '../redux/slices/cartSlice'
 import CartFloatButton from '../components/CartFloatButton'
+import FooterComponent from '../components/FooterComponent'
 
 
 
@@ -62,6 +63,7 @@ function HomePage() {
     <Carousel images={arrayImages} />
     <PrincipalTabs images={arrayImages2} images2={arrayImages3} />
     <ProductGrid />
+    <FooterComponent  />
     <CartFloatButton />
   </>
 }

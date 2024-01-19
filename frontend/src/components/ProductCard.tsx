@@ -1,10 +1,11 @@
 import React from 'react'
 import { Box, Image, Text, Badge, Flex, IconButton, GridItem } from '@chakra-ui/react'
-import { ChevronLeftIcon, ChevronRightIcon, StarIcon, AddIcon } from '@chakra-ui/icons'
+import { ChevronLeftIcon, ChevronRightIcon, StarIcon } from '@chakra-ui/icons'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { addCartItem } from '../redux/slices/cartSlice'
 import { useNavigate } from 'react-router-dom'
+import { FaCartPlus } from 'react-icons/fa'
 
 function ProductCard({ product }: { product: Product })  {
   const [state, setState] = useState(true)
@@ -38,7 +39,7 @@ function ProductCard({ product }: { product: Product })  {
           transition="bottom 0.4s"
         >
           <IconButton
-            icon={<AddIcon />}
+            icon={<FaCartPlus />}
             aria-label="Previous Image"
             bg={'blue.300'}
             rounded={50}
