@@ -30,6 +30,7 @@ import ProductEditPage from './views/products/ProductEditPage'
 import SearchUser from './views/user/SearchUser'
 import UserEdit from './views/user/UserEdit'
 import Search from './views/Search'
+import SalesTable from './views/sales/SalesTable'
 
 function App() {
 
@@ -72,6 +73,8 @@ function App() {
             <Route element={<PrivateRoute allowedRoles={[userEnum.role.admin]} />} ><Route path="/products/register" element={<ProductRegisterPage />} /></Route>
             <Route element={<PrivateRoute allowedRoles={[userEnum.role.admin]} />} ><Route path="/products/edit/:productId" element={<ProductEditPage />} /></Route>
 
+            {/* Sales section */}
+            <Route path="/sales/table" element={<SalesTable />} />
             <Route path="/sales/sale/:saleId" element={<SalePage />} />
           </Switch>
         </Router>

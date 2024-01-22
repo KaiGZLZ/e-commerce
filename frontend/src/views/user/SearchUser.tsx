@@ -5,7 +5,6 @@ import { ArrowRightIcon } from '@chakra-ui/icons'
 import { useForm  } from 'react-hook-form'
 import Navbar from '../../components/Navbar'
 import { useNavigate } from 'react-router-dom'
-import { parseLocarstorageUser } from '../../__helpers/isUser'
 
 type RegisterData = {
   username: string
@@ -28,8 +27,6 @@ function SearchUser() {
 
   return <>
     <Navbar />
-    <button onClick={() => console.log(parseLocarstorageUser())
-    }>Back</button>
     <Flex alignItems={'center'} justifyContent={'center'} width={'100%'} maxWidth={'1200px'} bg={'whiteAlpha.800'}>
 
       {/* Form container */}

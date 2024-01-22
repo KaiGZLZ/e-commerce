@@ -86,12 +86,6 @@ const salesSchema = new Schema<salesSchemaType>(
         comment: { type: String }
     },
     {
-        toJSON: {
-            virtuals: true,
-            transform: function(_doc: any, ret: any) {
-                delete ret._id
-            }
-        },
         timestamps: true
     }
 )

@@ -55,16 +55,13 @@ export interface salePackageReceivedType {
     comment: string
 }
 
-/** *************************************************** */
-
-export interface saleCancelType {
+export interface saleGetSalesTableType {
     _user: _user
-    id: ObjectId | string
-}
-
-export interface saleChangePaymentStatusType {
-    _user: _user
-    sale: {
-        id: ObjectId | string
+    query: {
+        order: string | undefined
+        orderType: string | undefined
+        status: string | undefined
+        user: string | undefined
+        page: number
     }
 }

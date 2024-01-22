@@ -75,8 +75,6 @@ function UserEdit() {
         dispatch(alertSlice.actions.setAlert({ status: 'success', title: 'Success', message: response.message }))
       })
       .catch((e) =>{
-        console.log(e)
-
         dispatch(alertSlice.actions.setAlert(e))
       })
   }

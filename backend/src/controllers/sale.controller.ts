@@ -7,6 +7,7 @@ const router = express.Router()
 
 // routes
 router.post('/register', salesRegisterValidation, saleRegister)
+router.get('/table', getSalesTable)
 router.get('/get-by-id/:id', getById)
 router.post('/user-payment-confirmation', userPaymentConfirmation)
 router.post('/admin-payment-confirmation', adminPaymentConfirmation)
@@ -21,9 +22,20 @@ function saleRegister(req: Request, res: Response, next: NextFunction): void {
     saleService.saleRegister(req.body)
         .then(data => res.status(201).json(data))
         .catch(err => {
-            console.log(err)
             next(err)
         })
+}
+
+// Get sales table
+function getSalesTable(req: Request, res: Response, next: NextFunction): void {
+    const request = {
+        ...req.body,
+        query: req.query
+    }
+
+    saleService.getSalesTable(request)
+        .then(data => res.json(data))
+        .catch(err => { next(err) })
 }
 
 // Get a sale

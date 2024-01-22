@@ -16,7 +16,7 @@ function FooterComponent() {
       bg="blackAlpha.900"
       marginTop={'3rem'}
     >
-      <span className="text-muted">All Rights Reserved 2024   <strong>Jesús González</strong></span>
+      <span className="text-muted">Backend and Frontend developed by  <strong>Jesús González</strong></span>
 
       <Flex
         flexDirection={'row'}

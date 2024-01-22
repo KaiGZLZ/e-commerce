@@ -16,6 +16,13 @@ export type getSaleType = {
   sale: Sale
 }
 
+export type getSalesTableType = {
+  result: Sale[]
+  total: number
+  totalPages: number
+  message: string
+}
+
 export type paymentConfirmationType = {
   saleId: string | undefined
   paymentMethod: string

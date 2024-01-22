@@ -4,7 +4,7 @@ import ProductModel from '../Models/product.model'
 import * as jwt from 'jsonwebtoken'
 import sendMail from '../__helpers/sendEmail'
 import { saleRegisterMail } from '../mailTemplates/sales.mails'
-import { type saleRegisterType, type saleGetByIdType, type salePaymentConfirmationType, type salePaymentRejectionType, type saleSentPackageType, type salePackageReceivedType } from './_servicesTypes/saleService.types'
+import { type saleRegisterType, type saleGetByIdType, type salePaymentConfirmationType, type salePaymentRejectionType, type saleSentPackageType, type salePackageReceivedType, type saleGetSalesTableType } from './_servicesTypes/saleService.types'
 import userEnum from '../__helpers/enums/user.enum'
 import saleEnum from '../__helpers/enums/sales.enum'
 import config from '../config'
@@ -122,6 +122,51 @@ export async function saleRegister(data: saleRegisterType): Promise<object> {
     return {
         message: 'Sale added successfully',
         saleId: saleSaved._id.toString()
+    }
+}
+
+export async function getSalesTable(data: saleGetSalesTableType): Promise<object> {
+    const query = data.query
+
+    // If there is sort query, add it to the sort object
+    let sort: any = {}
+    if (query.order && query.orderType) {
+        sort = { ...sort, ...{ [query.order]: query.orderType } }
+    }
+
+    // If there is a search query, add it to the filter object
+    const filter: any = {}
+
+    // If the user is role admin, we show all the sales and we can filter by user, if not, we show just the sales of the user
+
+    if (data._user.role !== userEnum.roles.admin) {
+        filter.user = data._user._id
+    } else if (query.user) {
+        const regex = new RegExp(query.user, 'i')
+        const userFound = await User.findOne({ username: regex })
+        filter.user = userFound?._id
+    }
+
+    // Filter by status
+    if (query.status) {
+        const foundEntry = Object.entries(saleEnum.statusDescription).find(([_key, value]) => value === query.status)
+
+        if (foundEntry) {
+            filter.status = foundEntry[0]
+        }
+    }
+
+    // The pagination options are added
+    const limit = 10
+    const skip = query.page ? (query.page - 1) * limit : 0
+
+    const result = await SaleModel.find(filter).sort(sort).skip(skip).limit(limit).populate('user').lean()
+    const total = await SaleModel.find(filter).countDocuments()
+
+    return {
+        result,
+        total,
+        totalPages: Math.ceil(total / limit)
     }
 }
 

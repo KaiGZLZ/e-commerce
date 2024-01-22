@@ -1,5 +1,5 @@
 import { api } from './servicesConfig/api.service'
-import { getSaleType, packageReceivedType, paymentConfirmationType, paymentRejectionType, registerSaleType, registerSaleTypeSuccess, sentPackageType } from './servicesTypes/sale.types'
+import { getSaleType, getSalesTableType, packageReceivedType, paymentConfirmationType, paymentRejectionType, registerSaleType, registerSaleTypeSuccess, sentPackageType } from './servicesTypes/sale.types'
 
 export const saleService = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -10,6 +10,15 @@ export const saleService = api.injectEndpoints({
         method: 'POST',
         body: JSON.stringify(data)
       }),
+    }),
+
+    getSalesTable: builder.query<getSalesTableType, string>({
+      query: (query) => ({
+        url: 'sales/table' + query,
+        method: 'GET',
+      }),
+      keepUnusedDataFor: 60,
+      providesTags: [{ type: 'SALES', id: 'sales/table' }]
     }),
 
     getSaleById: builder.query<getSaleType, string>({
@@ -27,7 +36,7 @@ export const saleService = api.injectEndpoints({
         method: 'POST',
         body: JSON.stringify(data),
       }),
-      invalidatesTags: [{ type: 'SALES', id: 'sales/get-by-id' }],
+      invalidatesTags: [{ type: 'SALES', id: 'sales/get-by-id' }, { type: 'SALES', id: 'sales/table' }],
     }),
 
     adminPaymentConfirmation: builder.mutation<registerSaleTypeSuccess, paymentConfirmationType>({
@@ -36,7 +45,7 @@ export const saleService = api.injectEndpoints({
         method: 'POST',
         body: JSON.stringify(data),
       }),
-      invalidatesTags: [{ type: 'SALES', id: 'sales/get-by-id' }],
+      invalidatesTags: [{ type: 'SALES', id: 'sales/get-by-id' }, { type: 'SALES', id: 'sales/table' }],
     }),
 
     adminPaymentRejection: builder.mutation<registerSaleTypeSuccess, paymentRejectionType>({
@@ -45,7 +54,7 @@ export const saleService = api.injectEndpoints({
         method: 'POST',
         body: JSON.stringify(data),
       }),
-      invalidatesTags: [{ type: 'SALES', id: 'sales/get-by-id' }],
+      invalidatesTags: [{ type: 'SALES', id: 'sales/get-by-id' }, { type: 'SALES', id: 'sales/table' }],
     }),
 
     sentPackage: builder.mutation<registerSaleTypeSuccess, sentPackageType>({
@@ -54,7 +63,7 @@ export const saleService = api.injectEndpoints({
         method: 'POST',
         body: JSON.stringify(data),
       }),
-      invalidatesTags: [{ type: 'SALES', id: 'sales/get-by-id' }],
+      invalidatesTags: [{ type: 'SALES', id: 'sales/get-by-id' }, { type: 'SALES', id: 'sales/table' }],
     }),
 
     packageReceived: builder.mutation<registerSaleTypeSuccess, packageReceivedType>({
@@ -63,7 +72,7 @@ export const saleService = api.injectEndpoints({
         method: 'POST',
         body: JSON.stringify(data),
       }),
-      invalidatesTags: [{ type: 'SALES', id: 'sales/get-by-id' }],
+      invalidatesTags: [{ type: 'SALES', id: 'sales/get-by-id' }, { type: 'SALES', id: 'sales/table' }],
     }),
   }),
 })
@@ -77,4 +86,6 @@ export const {
   usePackageReceivedMutation,
   useGetSaleByIdQuery,
   useLazyGetSaleByIdQuery,
+  useGetSalesTableQuery,
+  useLazyGetSalesTableQuery,
 } = saleService

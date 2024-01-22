@@ -129,6 +129,11 @@ function Navbar() {
                       </Flex>
                     </Link>
                   </> : <>
+                    <Link to={'/sales/table'} state={user.username}>
+                      <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
+                        Purchases table
+                      </Flex>
+                    </Link>
                     <Link to={'/users/update'} state={user.username}>
                       <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
                         Update information

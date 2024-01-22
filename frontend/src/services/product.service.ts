@@ -13,8 +13,8 @@ export const productsService = api.injectEndpoints({
     }),
 
     getTableProducts: builder.query< getTableProductsType, string>({
-      query: (data) => ({
-        url: 'products/table/'+data,
+      query: (query) => ({
+        url: 'products/table/'+query,
         method: 'GET',
       }),
       providesTags: [{ type: 'PRODUCTS', id: 'products/table' }],
