@@ -52,12 +52,12 @@ function Filter() {
   }
 
   return ( <>
-    <Flex width={'100%'} height={'50px'} alignItems={'center'} justifyContent={'space-between'}>
-      <Box fontSize={15} pl={'20px'}>
+    <Flex width={'100%'} height={'50px'} alignItems={['initial', 'initial', 'center', 'center']} justifyContent={'space-between'} flexDirection={['column', 'column', 'row', 'row']}>
+      <Box fontSize={15} pl={'20px'} my={'10px'}>
         <Link to={'/'}>Home</Link> <ChevronRightIcon/> {categoryName}
       </Box>
-      <Flex fontSize={15} pr={'20px'} flexDirection={'row'} alignItems={'center'} >
-        Order By:
+      <Flex fontSize={15} px={'20px'} flexDirection={'row'} alignItems={'center'} >
+        Order By: &nbsp; &nbsp;
         <Select size={'sm'}
           placeholder="Select option"
           width={'200px'}

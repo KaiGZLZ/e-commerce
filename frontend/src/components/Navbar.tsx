@@ -1,17 +1,18 @@
 import React from 'react'
 import { Box, Flex, Spacer, IconButton, useDisclosure, Collapse, Center, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody, Button, Spinner, Icon } from '@chakra-ui/react'
 import { HamburgerIcon, CloseIcon, SettingsIcon, WarningTwoIcon, AtSignIcon, ChevronDownIcon } from '@chakra-ui/icons'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { parseLocarstorageUser } from '../__helpers/isUser'
 import { userSlice } from '../redux/slices/userSlice'
 import { useDispatch } from 'react-redux'
 import { useGetAllCategoriesQuery } from '../services/category.service'
 import userEnum from '../enums/user.enum'
 import AsyncSearchInput from './AsyncSearchInput'
+import { api } from '../services/servicesConfig/api.service'
 
 function Navbar() {
-  const location = useLocation()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { isOpen: categoriesAreOpen, onToggle: openCategories } = useDisclosure()
   const { isOpen: categoriesAreOpen2, onToggle: openCategories2 } = useDisclosure()
 
@@ -123,6 +124,11 @@ function Navbar() {
                         Register a category
                       </Flex>
                     </Link>
+                    <Link to={'/sales/table'} state={user.username}>
+                      <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
+                        Purchases table
+                      </Flex>
+                    </Link>
                     <Link to={'/users/search'}>
                       <Flex color="white" padding={'1rem'} _hover={{ bg: 'teal.400' }}>
                         Search user
@@ -140,17 +146,17 @@ function Navbar() {
                       </Flex>
                     </Link>
                   </>}
-                  <Link to={location.pathname}>
-                    <Button fontWeight={'bold'} width={'100%'} height={'auto'} alignItems={'center'} justifyContent={'center'} bg={'red.200'} color="white" paddingY={'1rem'} _hover={{ bg: 'blue.500' }}
-                      onClick={() => {
-                        localStorage.removeItem('user')
-                        localStorage.removeItem('token')
-                        dispatch(userSlice.actions.deleteUser())
-                      }}
-                    >
+                  <Button fontWeight={'bold'} width={'100%'} height={'auto'} alignItems={'center'} justifyContent={'center'} bg={'red.200'} color="white" paddingY={'1rem'} _hover={{ bg: 'blue.500' }}
+                    onClick={() => {
+                      localStorage.removeItem('user')
+                      localStorage.removeItem('token')
+                      dispatch(userSlice.actions.deleteUser())
+                      dispatch(api.util.resetApiState())
+                      navigate('/')
+                    }}
+                  >
                       Loggout <WarningTwoIcon mx={2} />
-                    </Button>
-                  </Link>
+                  </Button>
                 </PopoverBody>
               </PopoverContent>
             </Popover>
@@ -200,6 +206,11 @@ function Navbar() {
               }
             </Flex>
           </Collapse>
+          <Link to={'/sales/search'}>
+            <Flex mr={6} color="white" fontWeight={'bold'} px={10} py={2} _hover={{ bg: 'gray.500' }}>
+            Track sale
+            </Flex>
+          </Link>
           {/* <Link to={'/contact'}>
             <Flex alignItems="center"  mr={6} color="white" marginTop={'3rem'} marginBottom={'1rem'}>
               Contact
@@ -270,11 +281,11 @@ function Navbar() {
           </Box>
         </Box>
         <Spacer />
-        {/* <Link to={'/offers'}>
+        <Link to={'/sales/search'}>
           <Flex mr={6} color="white" fontWeight={'bold'} px={10} py={2} _hover={{ bg: 'gray.500' }}>
-              Offers
+            Track sale
           </Flex>
-        </Link> */}
+        </Link>
         <Spacer />
       </Flex>
     </Box >

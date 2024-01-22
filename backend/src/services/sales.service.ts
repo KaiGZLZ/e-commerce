@@ -177,7 +177,7 @@ export async function getById(data: saleGetByIdType): Promise<object> {
         throw new Error('The sale does not exist')
     }
 
-    if (sale.user.toString()) {
+    if (sale.user?.toString()) {
         if (data.token) {
             const decodedToken = jwt.verify(data.token, config.SECRET)
             const user = await User.findById(decodedToken.sub).lean()

@@ -68,14 +68,16 @@ function SalePage() {
 
       {/* Payment confirmation button */}
       {/* User Button */}
-      { user && (user.role === userEnum.role.user) && data?.sale && (data?.sale.status <= salesEnum.status.pendingConfirmation) && <>
-        <Button size={'sm'} bg={'green.600'} color={'white'} position={'relative'} marginBottom={'20px'}
-          onClick={onOpenModalPaymentConfirmation}
-          isLoading={isFetching} loadingText='Loading'
-        >
-          { data?.sale?.status === salesEnum.status.pendingPayment ? 'Confirm Payment' : 'Edit Payment'}
-        </Button>
-      </>}
+      { (user && (user.role === userEnum.role.user) && data?.sale && (data?.sale?.status <= salesEnum.status.pendingConfirmation)) || (data?.sale && !data.sale.user) ?
+        <>
+          <Button size={'sm'} bg={'green.600'} color={'white'} position={'relative'} marginBottom={'20px'}
+            onClick={onOpenModalPaymentConfirmation}
+            isLoading={isFetching} loadingText='Loading'
+          >
+            { data?.sale?.status === salesEnum.status.pendingPayment ? 'Confirm Payment' : 'Edit Payment'}
+          </Button>
+        </> : null
+      }
       {/* Admin Buttons */}
       { user && (user?.role === userEnum.role.admin) && data?.sale && (data?.sale.status <= salesEnum.status.pendingConfirmation) && <>
         <Button size={'sm'} bg={'green.600'} color={'white'} position={'relative'}  marginBottom={'20px'}

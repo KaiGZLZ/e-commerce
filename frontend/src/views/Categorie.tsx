@@ -44,7 +44,7 @@ function Categorie() {
       <Filter />
 
       {/* Total products */}
-      <Flex width={'100%'} height={'50px'} alignItems={'center'} justifyContent={'end'}>
+      <Flex width={'100%'} height={'50px'} alignItems={'center'} justifyContent={'end'} mt={'20px'}>
         <Box fontSize={15} pr={'20px'}>Total products: {products?.total } </Box>
       </Flex>
 
