@@ -1,5 +1,5 @@
 import React from 'react'
-import { Flex, Tabs, TabList, Tab, TabPanels, TabPanel, Box, Button } from '@chakra-ui/react'
+import { Flex, Tabs, TabList, Tab, TabPanels, TabPanel, Box, Button, Image } from '@chakra-ui/react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons'
 import { useState } from 'react'
 
@@ -17,7 +17,7 @@ function PrincipalTabs({ images = [] as string[], images2 = [] as string[] }) {
     <Tabs variant='unstyled'>
       <TabList justifyContent={'center'}>
         <Tab
-          fontSize={'40px'}
+          fontSize={['30px', '30px', '40px', '40px']}
           fontWeight={'bold'}
           _hover={{ color: '#fcb941' }}
           color={'blackAlpha.800'}
@@ -25,10 +25,10 @@ function PrincipalTabs({ images = [] as string[], images2 = [] as string[] }) {
           _active={{ background: 'rgba(0, 0, 0, 0.05)' }}
           _selected={{ boxShadow: 'md', color: '#e3ac49' }}
         >
-          Destacados
+          Featured
         </Tab>
         <Tab
-          fontSize={'40px'}
+          fontSize={['30px', '30px', '40px', '40px']}
           fontWeight={'bold'}
           _hover={{ color: '#fcb941' }}
           color={'blackAlpha.800'}
@@ -36,7 +36,7 @@ function PrincipalTabs({ images = [] as string[], images2 = [] as string[] }) {
           _active={{ background: 'rgba(0, 0, 0, 0.05)' }}
           _selected={{ boxShadow: 'md', color: '#e3ac49' }}
         >
-          Ofertas
+          Offers
         </Tab>
       </TabList>
       <TabPanels>
@@ -84,18 +84,20 @@ function Carrousel2({ images = [] as string[] }) {
         <Box
           display="flex"
           transition="transform 0.4s"
-          transform={[`translateX(-${currentImageIndex * 100 / 2}%)`, `translateX(-${currentImageIndex * 100 / 2}%)`, `translateX(-${currentImageIndex * 100 / 3}%)`, `translateX(-${currentImageIndex * 100 / 4}%)`]}
+          transform={[`translateX(-${currentImageIndex * 100}%)`, `translateX(-${currentImageIndex * 100 / 2}%)`, `translateX(-${currentImageIndex * 100 / 3}%)`, `translateX(-${currentImageIndex * 100 / 4}%)`]}
           justifyContent={'space-between'}
           gap={['2%', '2%', '1%', '1%']}
         >
           {images.map((image, index) => (
-            <Box key={index} flexShrink={0} width={['48%', '48%', '32%', '24%']}>
-              <img
+            <Flex key={index} justifyContent={'center'} alignItems={'center'} flexShrink={0} width={['100%', '48%', '32%', '24%']} maxHeight={'144px'}>
+              <Image
                 src={image}
                 alt={`Carousel Image ${index + 1}`}
-                style={{ maxWidth: '100%' }}
+                maxHeight= {'144px'}
+                maxWidth= '100%'
+                objectFit= 'contain'
               />
-            </Box>
+            </Flex>
           ))}
         </Box>
         <Button
@@ -137,15 +139,15 @@ function Carrousel2({ images = [] as string[] }) {
             return index < finalLength
 
           }).map((_, index) => (
-            <Button
+            <Box
               key={index}
-              variant="unstyled"
               mx="1"
               p="0"
-              width="6px"
+              width={['20px', '20px', '30px', '30px']}
               height="10px"
               borderRadius="20%"
               backgroundColor={index === currentImageIndex ? 'blue.500' : 'gray.200'}
+              cursor={'pointer'}
               _hover={{ backgroundColor: 'blue.500' }}
               onClick={() => setCurrentImageIndex(index)}
             />

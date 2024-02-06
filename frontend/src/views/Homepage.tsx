@@ -19,15 +19,15 @@ const arrayImages = [
 
 
 const arrayImages2 = [
-  'https://pczatelca.com/images/slides/banner1.jpg',
+  'https://pczatelca.com/images/productos/491/1686882805_Probador%20de%20Bateria%20C%201.png',
   'https://pczatelca.com/images/slides/banner2.jpg',
   'https://pczatelca.com/images/slides/banner3.jpg',
   'https://pczatelca.com/images/slides/banner3.jpg',
   'https://pczatelca.com/images/slides/banner3.jpg',
+  'https://pczatelca.com/images/productos/491/1686882805_Probador%20de%20Bateria%20C%201.png',
   'https://pczatelca.com/images/slides/banner3.jpg',
   'https://pczatelca.com/images/slides/banner3.jpg',
-  'https://pczatelca.com/images/slides/banner3.jpg',
-  'https://pczatelca.com/images/slides/banner3.jpg',
+  'https://pczatelca.com/images/productos/491/1686882805_Probador%20de%20Bateria%20C%201.png',
   'https://pczatelca.com/images/slides/banner3.jpg',
   'https://pczatelca.com/images/slides/banner3.jpg',
 ]

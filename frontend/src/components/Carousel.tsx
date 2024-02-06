@@ -1,27 +1,37 @@
 import React from 'react'
-import { Box, Button, Flex } from '@chakra-ui/react'
+import { Box, Button, Flex, Image } from '@chakra-ui/react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons'
 import { useState, useEffect } from 'react'
 
 const Carousel = ({ images = [] as string[] }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const timerRef = React.useRef<NodeJS.Timer | null>(null)
 
-  const handlePreviousClick = () => {
+  const handlePreviousClick = (isClick = false) => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex === 0 ? images.length - 1 : prevIndex - 1
     )
+
+    if(isClick && timerRef?.current){
+      clearInterval(timerRef.current)
+    }
   }
 
-  const handleNextClick = () => {
+  const handleNextClick = (isClick = false) => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex === images.length - 1 ? 0 : prevIndex + 1
     )
+    if(isClick && timerRef?.current){
+      clearInterval(timerRef.current)
+    }
   }
 
   useEffect(() => {
     const timer = setInterval(() => {
       handleNextClick()
-    }, 50000)
+    },3000)
+
+    timerRef.current = timer
 
     return () => {
       clearInterval(timer)
@@ -30,24 +40,22 @@ const Carousel = ({ images = [] as string[] }) => {
 
   return (
     <Flex justifyContent={'space-between'} margin={'30px'} maxWidth={'1200px'} flexDir={['column', 'column', 'row', 'row']}>
-      <Box width={['100%', '100%', '66.7%', '66.7%']} mx="auto" marginRight={['0','0','10px','10px']} >
-        <Box position="relative" overflow={'hidden'}>
+      <Box width={['100%', '100%', '66.7%', '66.7%']} mx="auto" marginRight={['0','0','10px','10px']} mb={['2rem','2rem','0','0']} >
+        <Box position="relative" overflow={'hidden'} >
           <Box
             display="flex"
             transition="transform 0.4s"
             transform={`translateX(-${currentImageIndex * 100}%)`}
           >
             {images.map((image, index) => (
-              <Box key={index} flexShrink={0} width="100%">
+              <Flex alignItems={'center'} justifyContent={'center'} key={index} flexShrink={0} width="100%" maxHeight={'407px'}>
                 <img
                   src={image}
                   alt={`Carousel Image ${index + 1}`}
-                  style={{ maxWidth: '100%' }}
+                  style={{ maxHeight: '407px' }}
                 />
-              </Box>
+              </Flex>
             ))}
-
-
           </Box>
           <Button
             position="absolute"
@@ -55,7 +63,7 @@ const Carousel = ({ images = [] as string[] }) => {
             top="50%"
             left={0}
             transform="translateY(-50%)"
-            onClick={handlePreviousClick}
+            onClick={() => handlePreviousClick(true)}
             disabled={currentImageIndex === 0}
             leftIcon={<ChevronLeftIcon />}
           />
@@ -65,7 +73,7 @@ const Carousel = ({ images = [] as string[] }) => {
             top="50%"
             right={0}
             transform="translateY(-50%)"
-            onClick={handleNextClick}
+            onClick={() => handleNextClick(true)}
             disabled={currentImageIndex === images.length - 1}
             rightIcon={<ChevronRightIcon />}
           />
@@ -96,27 +104,30 @@ const Carousel = ({ images = [] as string[] }) => {
       </Box>
       <Box width={['100%', '100%', '33.3%', '33.3%']}>
         <Flex direction={'column'} alignItems={'center'}  justifyContent={'space-between'} width={'100%'} height={'100%'} gap={'5px'}>
-          <Box key={1} width={'100%'} mx={'auto'}>
-            <img
+          <Flex key={1} width={'100%'} mx={'auto'} maxHeight={['', '', '128px', '128px']} justifyContent={'end'} alignItems={'center'} >
+            <Image
               src={'https://pczatelca.com/images/slides/banner4.jpg'}
               alt={'Carousel Image'}
-              width={'100%'}
+              maxHeight={['', '', '128px', '128px']}
+              width={['100%', '100%', 'auto', 'auto']}
             />
-          </Box>
-          <Box key={2} width={'100%'} >
-            <img
+          </Flex>
+          <Flex key={2} width={'100%'} mx={'auto'} maxHeight={['', '', '128px', '128px']} justifyContent={'end'} alignItems={'center'} >
+            <Image
+              src={'https://pczatelca.com/images/slides/banner1.jpg'}
+              alt={'Carousel Image'}
+              maxHeight={['', '', '128px', '128px']}
+              width={['100%', '100%', 'auto', 'auto']}
+            />
+          </Flex>
+          <Flex key={3} width={'100%'}  mx={'auto'} maxHeight={['', '', '128px', '128px']} justifyContent={'end'} alignItems={'center'} >
+            <Image
               src={'https://pczatelca.com/images/slides/banner4.jpg'}
               alt={'Carousel Image'}
-              width={'100%'}
+              maxHeight={['', '', '128px', '128px']}
+              width={['100%', '100%', 'auto', 'auto']}
             />
-          </Box>
-          <Box key={3} width={'100%'} >
-            <img
-              src={'https://pczatelca.com/images/slides/banner4.jpg'}
-              alt={'Carousel Image'}
-              width={'100%'}
-            />
-          </Box>
+          </Flex>
         </Flex>
       </Box>
     </Flex>

@@ -166,7 +166,7 @@ function Navbar() {
 
       <Collapse in={categoriesAreOpen} animateOpacity>
         <Center
-          pb={4}
+          py={10}
           flexDir={'column'}
           justifyContent={'initial'}
           overflow={'scroll'} fontSize={'1rem'}
@@ -178,8 +178,26 @@ function Navbar() {
               Abouts
             </Flex>
           </Link> */}
-          <Flex alignItems="center"  mr={6} color="white" marginTop={'3rem'} marginBottom={'1rem'} onClick={openCategories2}>
-            Categories
+          <Link to={'/'}>
+            <Flex mr={6} color="white" fontWeight={'bold'} px={10} py={5} _hover={{ bg: 'gray.500' }}
+              onClick={() => {
+                categoriesAreOpen ? openCategories() : null
+                categoriesAreOpen2 ? openCategories2() : null
+              }}
+            >
+              Home
+            </Flex>
+          </Link>
+          <Flex
+            mr={6}
+            color="white"
+            fontWeight={'bold'}
+            px={10}
+            py={5}
+            _hover={{ bg: 'gray.500' }}
+            onClick={openCategories2}
+          >
+            Categories <ChevronDownIcon />
           </Flex>
           <Collapse in={categoriesAreOpen2} animateOpacity style={{ width: '100%' }}>
             <Flex
@@ -207,7 +225,12 @@ function Navbar() {
             </Flex>
           </Collapse>
           <Link to={'/sales/search'}>
-            <Flex mr={6} color="white" fontWeight={'bold'} px={10} py={2} _hover={{ bg: 'gray.500' }}>
+            <Flex mr={6} color="white" fontWeight={'bold'} px={10} py={5} _hover={{ bg: 'gray.500' }}
+              onClick={() => {
+                categoriesAreOpen ? openCategories() : null
+                categoriesAreOpen2 ? openCategories2() : null
+              }}
+            >
             Track sale
             </Flex>
           </Link>
@@ -218,8 +241,13 @@ function Navbar() {
           </Link> */}
           { !user && <>
             <Link to={'/login'}>
-              <Flex alignItems="center"  mr={6} color="white" marginTop={'3rem'} marginBottom={'1rem'}>
-              Login
+              <Flex mr={6} color="white" fontWeight={'bold'} px={10} py={5} _hover={{ bg: 'gray.500' }}
+                onClick={() => {
+                  categoriesAreOpen ? openCategories() : null
+                  categoriesAreOpen2 ? openCategories2() : null
+                }}
+              >
+              Logind
               </Flex>
             </Link>
           </>}

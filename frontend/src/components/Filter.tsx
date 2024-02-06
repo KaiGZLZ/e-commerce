@@ -29,12 +29,12 @@ function Filter() {
         searchParams.set('orderType', 'asc')
         searchParams.delete('page')
       }
-      setSearchParams(searchParams)
     }
     else{
       searchParams.delete('order')
       searchParams.delete('orderType')
     }
+    setSearchParams(searchParams)
   }
 
   let defaultSelectValue = ''
